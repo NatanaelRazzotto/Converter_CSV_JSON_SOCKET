@@ -13,7 +13,7 @@ public class Principal extends Application{
 	public void start(Stage primaryStage) {
 		try {
 			Pane root = FXMLLoader.load(getClass().getResource("TelaPrincipal.fxml"));
-			Scene scene = new Scene (root,400,224);
+			Scene scene = new Scene (root,506,194);
 			primaryStage.setScene(scene);
 			primaryStage.show();
 			/*BorderPane root = new BorderPane();
