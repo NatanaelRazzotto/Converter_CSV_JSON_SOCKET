@@ -67,7 +67,7 @@ public class InicialController {
     private void AbrirArquivo(ActionEvent event) {
     	try {
 			Captura_Arquivo();
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -79,6 +79,7 @@ public class InicialController {
    	    	Salva_Arquivo();
 		} catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
 		}
 
     }
@@ -106,13 +107,13 @@ public class InicialController {
 				}
 	        
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
     }
-    public File Captura_Arquivo() throws FileNotFoundException {////////
-    	JFileChooser file_chooser = new JFileChooser();
+    public File Captura_Arquivo(){////////
+    	try {
+	    JFileChooser file_chooser = new JFileChooser();
     	StringBuilder sb = new StringBuilder();
     	
     	if(file_chooser.showOpenDialog(null)==JFileChooser.APPROVE_OPTION)
@@ -121,12 +122,20 @@ public class InicialController {
     		dirOriginario = file;
     		Processamento.setDirOriginario(file);
     		txtA_Status.appendText(dirOriginario + "\n");
-
+    		return dirOriginario;
     	}
-		return null;
+    	else
+    	{
+    		return null;
+    	}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
     }
     public File Salva_Arquivo() {////////////
-    	JFrame parentFrame = new JFrame();
+    	try {
+	   	JFrame parentFrame = new JFrame();
     	JFileChooser file_chooser = new JFileChooser();
     	file_chooser.setDialogTitle("Onde Deseja Salvar o Arquivo CSV");
     	int userSelection = file_chooser.showSaveDialog(parentFrame);
@@ -138,9 +147,13 @@ public class InicialController {
     	    return fileToSave;
     	}
 		return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
     	
     }
-    public void Salva_ArquivoJSON() {
+  /*  public void Salva_ArquivoJSON() {
     	JFrame parentFrame = new JFrame();
     	JFileChooser file_chooser = new JFileChooser();
     	file_chooser.setDialogTitle("Onde Deseja Salvar o Arquivo");
@@ -151,15 +164,15 @@ public class InicialController {
       	    System.out.println("Save as file: " + fileToSave.getAbsolutePath());
     	}
     	
-    }
+    }*/
     public static void gerarVeiculos(File dir)
 	{
-    	  
+    	try {
 		System.out.println("sdadsad");
 		List<String> Modelo = Arrays.asList("Onix","Palio","Fiesta","Argo","HB20");
 		List<String> alfabeto = Arrays.asList("A","B","C","D","F","G","H","I","J","K","L",
 				"M","N","O","P","Q","R","S","T","U","V","W","Y","X","Z");
-		try {
+	
 			System.out.println("gfhghgh");
 		Random gerador = new Random();
 		FileWriter csvWriter = new FileWriter(dir, false);
@@ -181,8 +194,14 @@ public class InicialController {
 	}
     
 	public void UpdateProgress(int progresão, int maximo) {
-		PrB_Proecesso.setProgress((double)progresão/maximo);
-		txtA_Status.appendText(progresão + "\n");
+		try {
+			PrB_Proecesso.setProgress((double)progresão/maximo);
+			PrB_Proecesso.progressProperty().unbind();
+			txtA_Status.appendText(progresão + "\n");
+			} catch (Exception e) {
+				e.printStackTrace();
+		
+			}
 	}
 
 	public void ProcessoConversao() {
@@ -193,12 +212,18 @@ public class InicialController {
 		Thread.sleep(1000);
 		Instant inicioLeituraFile =Instant.now();
 		ContadorProgresso = 0;
-		Thread Thread1 = new Thread(new ConversaoArquivos("Thread1",inicioLeituraFile));
-		Thread Thread2 = new Thread(new ConversaoArquivos("Thread2",inicioLeituraFile));
+		Thread Thread1 = new Thread(new ConversaoArquivos("Thread1"));
+		Thread Thread2 = new Thread(new ConversaoArquivos("Thread2"));
 		Thread Thread3 = new Thread(new EscritaArquivos("Thread3",dirDestinado,0));
 		Thread1.start();
 		Thread2.start(); 
 		Thread3.start();
+		Thread3.join();
+		Vector<String>totalTempo = Processamento.ContabilidadeTempo;
+		txtA_Status.appendText("Contabilização dos TEMPOS: "+ "\n");
+		for (String tempo : totalTempo) {
+			txtA_Status.appendText(tempo+ "\n");
+		}
 		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

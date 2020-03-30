@@ -16,7 +16,7 @@ import com.razzotto.worker.EscritaArquivos;
 public class Processamento {
     public static Vector<String>ContabilidadeTempo = new Vector<String>();
     public static Vector<Pessoa> ListaPessoas = new Vector<Pessoa>();
-	static Vector<String> ObjetosJson = new Vector<String>();
+	public static Vector<String> ObjetosJson = new Vector<String>();
 	
     private static File dirOriginario ;
     private static File dirDestinado;
@@ -44,13 +44,19 @@ public class Processamento {
 		return ObjetosJson.size();
 		
 	}
-	public static String obterDuracao(Instant inicio, Instant fim, String Mensagem) {
-		Duration decorrido = Duration.between(inicio, fim);
-		long decorridoMilissegundos = decorrido.toMillis();
-		String Retorno = Mensagem + decorridoMilissegundos + " Milesgundos";
-		ContabilidadeTempo.add(Retorno);
-		//txtA_Status.appendText("Tempo de Leitura e preparação Concluidos "+ +"\n");
-		return Retorno;
+	public static synchronized String obterDuracao(Instant inicio, Instant fim, String Mensagem) {
+		try {
+			Duration decorrido = Duration.between(inicio, fim);
+			long decorridoMilissegundos = decorrido.toMillis();
+			String Retorno = Mensagem + decorridoMilissegundos + " Milesgundos";
+			ContabilidadeTempo.add(Retorno);
+			//txtA_Status.appendText("Tempo de Leitura e preparação Concluidos "+ +"\n");
+			return Retorno;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
 		
 	}
 	
@@ -68,6 +74,7 @@ public class Processamento {
 			obterDuracao(inicioLeituraFile, fimLeituraFile, "Tempo Para Abertura e Count:");
 			return QTDrowsArquivoAtual;
 		} catch (Exception e) {
+			e.printStackTrace();
 			// TODO: handle exception
 			return 0;
 		}
@@ -91,50 +98,10 @@ public class Processamento {
 			obterDuracao(inicioLeituraFile, fimLeituraFile, "Tempo leitura:");
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			// TODO: handle exception
 		}
 	}
-	public static synchronized boolean Conversao() {
-		Gson gson = new Gson();
-		if (ListaPessoas.size()>0)
-		{
-			ContadorProgresso++;
-			System.out.println(ContadorProgresso + "/n");
-			Pessoa pessoaAtual = ListaPessoas.get(0);
-			ListaPessoas.remove(0);
-			String json = gson.toJson(pessoaAtual);
-			ObjetosJson.add(json);
-			return false;
-		}
-		return true;
-	}
-	public static synchronized boolean Escrita(FileWriter writer,int contadorEscrita) {
-		try {
-			//Instant inicioLeituraFile = Instant.now();
-			
-			//writer = new FileWriter(dirDestinado, false);
-			System.out.println(ObjetosJson.size()+"///////////////////////////////");
-			if ((ObjetosJson.size() > 0) &&(contadorEscrita < ObjetosJson.size()) )
-			{
-			String pessoaAtualGson = ObjetosJson.get(contadorEscrita);
-		//	ObjetosJson.remove(0);
-			writer.write(pessoaAtualGson +"\n");
-			return false;
-			}
-			 
-			/*for (ContadorProgresso = 0; ContadorProgresso < ObjetosJson.size(); ContadorProgresso++)
-			{
-				String pessoaAtualGson = ObjetosJson.get(ContadorProgresso);
-				 writer.write(pessoaAtualGson +"\n");
-			}*/
-		   //	writer.close();
-			//Instant fimLeituraFile = Instant.now();
-			//obterDuracao(inicioLeituraFile, fimLeituraFile, "Tempo Escrita:");
-			return true;
-		
-		} catch (Exception e) {
-			System.out.println("Ocoreu erro na escrita: " + e.getMessage());
-			return false;
-		}
-	}
+
+
 }
