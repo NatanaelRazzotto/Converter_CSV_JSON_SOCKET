@@ -44,7 +44,11 @@ public class InicialController {
     @FXML
     private Button btn_ConverteArquivo;
     @FXML
-    private ProgressBar PrB_Proecesso;
+    private ProgressBar PrB_ProgressoLeitura;
+    @FXML
+    private ProgressBar PrB_ProecessoConversao;
+    @FXML
+    private ProgressBar PrB_ProecessoEscrita;
     @FXML 
     private TextArea txtA_Status;
     @FXML 
@@ -195,8 +199,8 @@ public class InicialController {
     
 	public void UpdateProgress(int progresão, int maximo) {
 		try {
-			PrB_Proecesso.setProgress((double)progresão/maximo);
-			PrB_Proecesso.progressProperty().unbind();
+			PrB_ProgressoLeitura.setProgress((double)progresão/maximo);
+			PrB_ProgressoLeitura.progressProperty().unbind();
 			txtA_Status.appendText(progresão + "\n");
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -206,8 +210,8 @@ public class InicialController {
 
 	public void ProcessoConversao() {
 		try {
-		txtA_Status.appendText("Quantidade Arquivo " + Processamento.ContabilizarArquivo() + "\n");
-		Processamento.Leitura();/*Constroi a ListaPessoas de retorno do arquivo*/
+		/*txtA_Status.appendText("Quantidade Arquivo " + Processamento.ContabilizarArquivo() + "\n");
+		Processamento.Leitura();/*Constroi a ListaPessoas de retorno do arquivo
 		txtA_Status.appendText("Leitura e preparação Concluidos "+ "\n");
 		Thread.sleep(1000);
 		Instant inicioLeituraFile =Instant.now();
@@ -223,7 +227,9 @@ public class InicialController {
 		txtA_Status.appendText("Contabilização dos TEMPOS: "+ "\n");
 		for (String tempo : totalTempo) {
 			txtA_Status.appendText(tempo+ "\n");
-		}
+		}*/
+			
+			Processamento.gestaoProcessamento(PrB_ProgressoLeitura, PrB_ProecessoConversao, PrB_ProecessoEscrita);
 		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

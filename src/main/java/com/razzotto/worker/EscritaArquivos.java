@@ -64,7 +64,7 @@ public class EscritaArquivos implements Runnable{
 					System.out.println("Parse realizado pela thread "+ this.nameThread );
 				}
 			} 
-			while (ContadorEscrita <= Processamento.TerminouEscrita()); {
+			while (ContadorEscrita <= 10/*Processamento.TerminouEscrita()*/); {
 				writer.close();
 		 		fimLeituraFile = Instant.now();
 				Processamento.obterDuracao(inicioLeituraFile, fimLeituraFile, "Tempo EScrita:");
