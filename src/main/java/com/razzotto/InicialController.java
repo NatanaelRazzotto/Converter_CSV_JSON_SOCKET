@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.razzotto.model.Processamento;
 import com.razzotto.worker.ConversaoArquivos;
 import com.razzotto.worker.EscritaArquivos;
+import com.razzotto.worker.Temporizacao;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -43,6 +44,8 @@ public class InicialController {
     private Button btn_SalvarArquivo;
     @FXML
     private Button btn_ConverteArquivo;
+    @FXML
+    private Button btn_TEMPO;
     @FXML
     private ProgressBar PrB_ProgressoLeitura;
     @FXML
@@ -67,6 +70,16 @@ public class InicialController {
      File dirOriginario ;
      static File dirDestinado;
     
+     @FXML////////////////////////////////////////////////////////////
+     private void AbrirTempo(ActionEvent event) {
+     	try {
+     		LerTempos();
+ 		} catch (Exception e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		}
+
+     }
     @FXML////////////////////////////////////////////////////////////
     private void AbrirArquivo(ActionEvent event) {
     	try {
@@ -229,9 +242,63 @@ public class InicialController {
 			txtA_Status.appendText(tempo+ "\n");
 		}*/
 			
-			Processamento.gestaoProcessamento(PrB_ProgressoLeitura, PrB_ProecessoConversao, PrB_ProecessoEscrita);
+			Processamento.gestaoProcessamento(PrB_ProgressoLeitura, PrB_ProecessoConversao, PrB_ProecessoEscrita,txtA_Status);
 		
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void LerTempos ()
+	{
+		try {
+		//	txtA_Status.appendText("Arquivo" + CaminhoAplicação);
+			long somTinicio = 0;
+			long medTinicio = 0;
+			long somTLeitura = 0;
+			long medTLeitura = 0;
+			long somTParse = 0;
+			long medTParse = 0;
+			long somEscrita = 0;
+			long medEscrita = 0;
+			String row;
+			String CaminhoAplicação = System.getProperty("user.dir");
+			String CaminoLog = CaminhoAplicação + "\\LogsTempo\\RegistrosTempo.txt";
+			BufferedReader csvReader = new BufferedReader(new FileReader(CaminoLog));
+			List<Temporizacao> ListadeTempos = new ArrayList<Temporizacao>();
+			try {
+				while (( row = csvReader.readLine()) != null) {
+				    String[] arquivoMemoria = row.split(",");
+				    Temporizacao tempo = new Temporizacao();
+				    tempo.setTempodeAbertura(Long.parseLong(arquivoMemoria[0]));
+				    tempo.setTempodeLeitura(Long.parseLong(arquivoMemoria[1]));
+				    tempo.setTempodeConversao(Long.parseLong(arquivoMemoria[2]));
+				    tempo.setTempodeEscrita(Long.parseLong(arquivoMemoria[3]));
+				    ListadeTempos.add(tempo);
+				}
+				for (Temporizacao temporizacao : ListadeTempos) {
+					somTinicio = somTinicio+ temporizacao.getTempodeAbertura();
+					somTLeitura = somTLeitura+ temporizacao.getTempodeLeitura();
+					somTParse = somTParse+ temporizacao.getTempodeConversao();
+					somEscrita = somEscrita+ temporizacao.getTempodeEscrita();
+				}
+				medTinicio = (somTinicio / ListadeTempos.size());
+				medTLeitura = (somTLeitura / ListadeTempos.size());
+				medTParse = (somTParse / ListadeTempos.size());
+				medEscrita = (somEscrita / ListadeTempos.size());
+				txtA_Status.appendText("//////Contabilização de Tempos de Processamento\\\\\\  \n");
+				txtA_Status.appendText("//////"+ListadeTempos.size()+" Já Processados! \\\\\\  \n");
+				txtA_Status.appendText("* TEMPO MÉDIO DE ABERTURA: " + medTinicio + "Milesegundos \n");
+				txtA_Status.appendText("* TEMPO MÉDIO DE LEITURA: " + medTLeitura+ "Milesegundos \n");
+				txtA_Status.appendText("* TEMPO MÉDIO DE PARSE: " + medTParse+ "Milesegundos \n");
+				txtA_Status.appendText("* TEMPO MÉDIO DE ESCRITA: " + medEscrita+ "Milesegundos \n");
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

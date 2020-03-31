@@ -15,6 +15,7 @@ import com.razzotto.worker.EscritaArquivos;
 
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextArea;
 
 public class Processamento {
     public static  Vector<String>ContabilidadeTempo = new Vector<String>();
@@ -57,10 +58,13 @@ public class Processamento {
 		
 	//}
 	
+  //  public void EscreverLogsTempo ()
+//    {
+    	
+  //  }
 
 
-
-	public static void gestaoProcessamento (ProgressBar pB_Leitura, ProgressBar pB_Conversao, ProgressBar pB_Escrita)
+	public static void gestaoProcessamento (ProgressBar pB_Leitura, ProgressBar pB_Conversao, ProgressBar pB_Escrita, TextArea txtA_Status)
 	{
 		try {
 			    String row;
@@ -113,10 +117,13 @@ public class Processamento {
 								
 			}
 		};
+
 		Task<Void> Conversao = new Task<Void>() {
 			@Override
 			protected Void call() {
 				try {
+					Instant inicioLeituraFile =  Instant.now();
+					Instant fimLeituraFile;
 					int ContaProgresso = 0;
 					float acum = 0;
 					do {
@@ -145,8 +152,8 @@ public class Processamento {
 							System.out.println("A lista está vazia ");
 						}
 					}while(ListaPessoas.size() > 0); {
-						//fimLeituraFile = Instant.now();
-						//Processamento.obterDuracao(inicioLeituraFile, fimLeituraFile, "Tempo Conversão:");
+						fimLeituraFile = Instant.now();
+						Processamento.obterDuracao(inicioLeituraFile, fimLeituraFile, "Tempo Conversão:");
 				//		System.out.println("A conversão terminou!");
 					}
 					return null;
@@ -162,17 +169,13 @@ public class Processamento {
 				try {
 					FileWriter writer = new FileWriter(dirDestinado, false);
 					int ContadorEscrita = 0;
-					Instant inicioLeituraFile;
+					Instant inicioLeituraFile =  Instant.now();
 					Instant fimLeituraFile;
 					int ContaProgresso = 0;
 					float acum = 0;
 					
 					do {
-						if (ContadorEscrita == 0)
-						{
-							inicioLeituraFile = Instant.now();
-						}
-						
+									
 		    			if ((ObjetosJson.size() > 0))
 						{
 						String pessoaAtualGson = ObjetosJson.get(0);
@@ -207,8 +210,9 @@ public class Processamento {
 					while ((ObjetosJson.size() >= 0)&&(ContadorEscrita<QTDrowsArquivoAtual)); {
 						writer.close();
 				 		fimLeituraFile = Instant.now();
-					//	Processamento.obterDuracao(inicioLeituraFile, fimLeituraFile, "Tempo EScrita:");
+						Processamento.obterDuracao(inicioLeituraFile, fimLeituraFile, "Tempo EScrita:");
 						System.out.println(" terminou Escrita");
+	
 						
 					}
 					return null;
@@ -220,7 +224,30 @@ public class Processamento {
 			
 			}
 		};
-		
+		Task<Void> EscreverLogsTempo = new Task<Void>() {
+			
+			@Override
+			protected Void call() throws Exception {
+				try {
+					String CaminhoAplicação = System.getProperty("user.dir");
+				//	txtA_Status.appendText("Arquivo" + CaminhoAplicação);
+					String CaminoLog = CaminhoAplicação + "\\LogsTempo\\RegistrosTempo.txt";
+					System.out.println(CaminhoAplicação);
+					FileWriter writer = new FileWriter(CaminoLog, true);
+					for (String tempoContabilizado : ContabilidadeTempo) {
+						writer.append(tempoContabilizado + ",");
+					}
+					writer.append("\n");
+					writer.close();
+					return null;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return null;
+				}
+				
+			}
+		};
+
 		pB_Leitura.progressProperty().bind(Leitura.progressProperty());
 		pB_Conversao.progressProperty().bind(Leitura.progressProperty());
 		pB_Escrita.progressProperty().bind(Leitura.progressProperty());
@@ -229,6 +256,7 @@ public class Processamento {
 		Thread t2 = new Thread(Conversao);
 		Thread t3 = new Thread(Conversao);
 		Thread t4 = new Thread(Escrever);
+		Thread t5 = new Thread(EscreverLogsTempo);
 		
 		try {
 			t1.start();
@@ -244,6 +272,8 @@ public class Processamento {
 			Thread.sleep(20);
 			
 			t4.start();
+			t4.join();
+			t5.start();
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -255,7 +285,7 @@ public class Processamento {
 		try {
 			Duration decorrido = Duration.between(inicio, fim);
 			long decorridoMilissegundos = decorrido.toMillis();
-			String Retorno = Mensagem + decorridoMilissegundos + " Milesgundos";
+			String Retorno = Long.toString(decorridoMilissegundos) ;
 			ContabilidadeTempo.add(Retorno);
 			//txtA_Status.appendText("Tempo de Leitura e preparação Concluidos "+ +"\n");
 			return Retorno;
