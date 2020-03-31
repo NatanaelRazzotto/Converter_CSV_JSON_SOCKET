@@ -25,18 +25,12 @@ public class Processamento {
     public static File getDirOriginario() {
 		return dirOriginario;
 	}
-
-
 	public static void setDirOriginario(File dirOriginario) {
 		Processamento.dirOriginario = dirOriginario;
 	}
-
-
 	public static File getDirDestinado() {
 		return dirDestinado;
 	}
-
-
 	public static void setDirDestinado(File dirDestinado) {
 		Processamento.dirDestinado = dirDestinado;
 	}
@@ -45,26 +39,7 @@ public class Processamento {
     static int ContadorProgresso = 0;
     static int QTDrowsArquivoAtual;
     static int MaximoProgresso;
-    
-
-	//public boolean isTerminated() {
-	//	Boolean lendoDados = true;
-		//return ListaPessoas.size() > 0;
-	
-	//}
-	//public int TerminouEscrita() {
-		
-	//	return ObjetosJson.size();
-		
-	//}
-	
-  //  public void EscreverLogsTempo ()
-//    {
-    	
-  //  }
-
-
-	public static void gestaoProcessamento (ProgressBar pB_Leitura, ProgressBar pB_Conversao, ProgressBar pB_Escrita, TextArea txtA_Status)
+    public static void gestaoProcessamento (ProgressBar pB_Leitura, ProgressBar pB_Conversao, ProgressBar pB_Escrita, TextArea txtA_Status)
 	{
 		try {
 			    String row;
@@ -98,8 +73,6 @@ public class Processamento {
 								arquivoMemoria[17], arquivoMemoria[18],arquivoMemoria[19],arquivoMemoria[20],arquivoMemoria[21], arquivoMemoria[22],
 								arquivoMemoria[23],arquivoMemoria[24]);
 			    	     ListaPessoas.add(informacoesPessoa);
-						//	contador++;
-
 						if (ContaProgresso == MaximoProgresso) {
 
 							acum += 0.01F;							
@@ -132,14 +105,10 @@ public class Processamento {
 							Gson gson = new Gson();
 							Pessoa pessoaAtual = ListaPessoas.get(0);
 							ListaPessoas.remove(0);
-						//	System.out.println(pessoaAtual);
 							String json = gson.toJson(pessoaAtual);
-							//System.out.println(json);
 							ObjetosJson.add(json);
 							ContaProgresso++;
-						//	System.out.println(ObjetosJson.size());
-						//	System.out.println("Parse realizado pela thread " + Thread.currentThread().getName());
-							//status = false;
+
 							if (ContaProgresso == MaximoProgresso) {
 
 								acum += 0.01F;							
@@ -212,6 +181,16 @@ public class Processamento {
 				 		fimLeituraFile = Instant.now();
 						Processamento.obterDuracao(inicioLeituraFile, fimLeituraFile, "Tempo EScrita:");
 						System.out.println(" terminou Escrita");
+						
+						String CaminhoAplicação = System.getProperty("user.dir");
+						String CaminoLog = CaminhoAplicação + "\\LogsTempo\\RegistrosTempo.txt";
+						System.out.println(CaminhoAplicação);
+						FileWriter writerLogs = new FileWriter(CaminoLog, true);
+						for (String tempoContabilizado : ContabilidadeTempo) {
+							writerLogs.append(tempoContabilizado + ",");
+						}
+						writerLogs.append("\n");
+						writerLogs.close();
 	
 						
 					}
@@ -227,10 +206,9 @@ public class Processamento {
 		Task<Void> EscreverLogsTempo = new Task<Void>() {
 			
 			@Override
-			protected Void call() throws Exception {
+			protected Void call() {
 				try {
-					String CaminhoAplicação = System.getProperty("user.dir");
-				//	txtA_Status.appendText("Arquivo" + CaminhoAplicação);
+				/*	String CaminhoAplicação = System.getProperty("user.dir");
 					String CaminoLog = CaminhoAplicação + "\\LogsTempo\\RegistrosTempo.txt";
 					System.out.println(CaminhoAplicação);
 					FileWriter writer = new FileWriter(CaminoLog, true);
@@ -239,11 +217,12 @@ public class Processamento {
 					}
 					writer.append("\n");
 					writer.close();
-					return null;
+					return null;*/
 				} catch (Exception e) {
 					e.printStackTrace();
 					return null;
 				}
+				return null;
 				
 			}
 		};
@@ -256,7 +235,7 @@ public class Processamento {
 		Thread t2 = new Thread(Conversao);
 		Thread t3 = new Thread(Conversao);
 		Thread t4 = new Thread(Escrever);
-		Thread t5 = new Thread(EscreverLogsTempo);
+		//Thread t5 = new Thread(EscreverLogsTempo);
 		
 		try {
 			t1.start();
@@ -272,8 +251,8 @@ public class Processamento {
 			Thread.sleep(20);
 			
 			t4.start();
-			t4.join();
-			t5.start();
+		//	t4.join();
+		//	t5.start();
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();

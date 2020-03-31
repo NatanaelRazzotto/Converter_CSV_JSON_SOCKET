@@ -47,6 +47,8 @@ public class InicialController {
     @FXML
     private Button btn_TEMPO;
     @FXML
+    private Button btn_MedirTEMPO;
+    @FXML
     private ProgressBar PrB_ProgressoLeitura;
     @FXML
     private ProgressBar PrB_ProecessoConversao;
@@ -56,6 +58,7 @@ public class InicialController {
     private TextArea txtA_Status;
     @FXML 
     private TextArea txtA_Progress;
+    
     
     //
     static Vector<Pessoa> ListaPessoas = new Vector<Pessoa>();
@@ -80,6 +83,16 @@ public class InicialController {
  		}
 
      }
+     @FXML////////////////////////////////////////////////////////////
+     private void MostrarTempo(ActionEvent event) {
+      	try {
+      		Tempo();
+  		} catch (Exception e) {
+  			// TODO Auto-generated catch block
+  			e.printStackTrace();
+  		}
+
+      }
     @FXML////////////////////////////////////////////////////////////
     private void AbrirArquivo(ActionEvent event) {
     	try {
@@ -103,8 +116,7 @@ public class InicialController {
     @FXML
     private void ConverterCSV(ActionEvent event) {
     	try {		
-    		txtA_Status.appendText("----------BEM VINDO-----------" + "\n");
-			if ((dirOriginario != null)&&(dirDestinado!=null)) {
+    	    	if ((dirOriginario != null)&&(dirDestinado!=null)) {
 				btn_ConverteArquivo.setDisable(true);
 				btn_AbrirArquivo.setDisable(true);
 				btn_SalvarArquivo.setDisable(true);
@@ -170,19 +182,7 @@ public class InicialController {
 		}
     	
     }
-  /*  public void Salva_ArquivoJSON() {
-    	JFrame parentFrame = new JFrame();
-    	JFileChooser file_chooser = new JFileChooser();
-    	file_chooser.setDialogTitle("Onde Deseja Salvar o Arquivo");
-    	int userSelection = file_chooser.showSaveDialog(parentFrame);
-    	if (userSelection == JFileChooser.APPROVE_OPTION) {
-    	    File fileToSave = file_chooser.getSelectedFile();
-    	    gerarVeiculos(fileToSave);
-      	    System.out.println("Save as file: " + fileToSave.getAbsolutePath());
-    	}
-    	
-    }*/
-    public static void gerarVeiculos(File dir)
+    public static void gerarVeiculos(File dir)//Metodo não usado
 	{
     	try {
 		System.out.println("sdadsad");
@@ -204,7 +204,6 @@ public class InicialController {
 			csvWriter.close();
 			System.out.println("deu");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
      
@@ -223,36 +222,15 @@ public class InicialController {
 
 	public void ProcessoConversao() {
 		try {
-		/*txtA_Status.appendText("Quantidade Arquivo " + Processamento.ContabilizarArquivo() + "\n");
-		Processamento.Leitura();/*Constroi a ListaPessoas de retorno do arquivo
-		txtA_Status.appendText("Leitura e preparação Concluidos "+ "\n");
-		Thread.sleep(1000);
-		Instant inicioLeituraFile =Instant.now();
-		ContadorProgresso = 0;
-		Thread Thread1 = new Thread(new ConversaoArquivos("Thread1"));
-		Thread Thread2 = new Thread(new ConversaoArquivos("Thread2"));
-		Thread Thread3 = new Thread(new EscritaArquivos("Thread3",dirDestinado,0));
-		Thread1.start();
-		Thread2.start(); 
-		Thread3.start();
-		Thread3.join();
-		Vector<String>totalTempo = Processamento.ContabilidadeTempo;
-		txtA_Status.appendText("Contabilização dos TEMPOS: "+ "\n");
-		for (String tempo : totalTempo) {
-			txtA_Status.appendText(tempo+ "\n");
-		}*/
-			
 			Processamento.gestaoProcessamento(PrB_ProgressoLeitura, PrB_ProecessoConversao, PrB_ProecessoEscrita,txtA_Status);
 		
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	public void LerTempos ()
 	{
 		try {
-		//	txtA_Status.appendText("Arquivo" + CaminhoAplicação);
 			long somTinicio = 0;
 			long medTinicio = 0;
 			long somTLeitura = 0;
@@ -294,14 +272,35 @@ public class InicialController {
 				txtA_Status.appendText("* TEMPO MÉDIO DE ESCRITA: " + medEscrita+ "Milesegundos \n");
 				
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				txtA_Status.appendText("//////Não foi possiverler os logs\\\\\\  \n");
 				e.printStackTrace();
 			}
 			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			txtA_Status.appendText("//////Não foi possiverler os logs\\\\\\  \n");
 			e.printStackTrace();
 		}
+	}
+	public void Tempo ()
+	{
+		try {
+		if (Processamento.ContabilidadeTempo.size() > 0)
+		{		
+		List<String> tempos = Processamento.ContabilidadeTempo;
+		txtA_Status.appendText("//////O ultimo processamento teve como resultado!\\\\\\  \n");
+		txtA_Status.appendText("* TEMPO MÉDIO DE ABERTURA: " + tempos.get(0) + "Milesegundos \n");
+		txtA_Status.appendText("* TEMPO MÉDIO DE LEITURA: " + tempos.get(1)+ "Milesegundos \n");
+		txtA_Status.appendText("* TEMPO MÉDIO DE PARSE: " + tempos.get(2)+ "Milesegundos \n");
+		txtA_Status.appendText("* TEMPO MÉDIO DE ESCRITA: " + tempos.get(3)+ "Milesegundos \n");
+		}
+		else 
+		{
+			txtA_Status.appendText("//////O programa não rodou ainda!\\\\\\  \n");
+		}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 		

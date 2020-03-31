@@ -8,7 +8,7 @@ import java.time.Instant;
 import com.razzotto.InicialController;
 import com.razzotto.model.Processamento;
 
-public class EscritaArquivos implements Runnable{
+public class EscritaArquivos implements Runnable{ /// classe substituida por task
 	
 	private String nameThread;
 	private Instant inicioLeituraFile;

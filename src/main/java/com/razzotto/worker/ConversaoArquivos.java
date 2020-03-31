@@ -7,7 +7,7 @@ import com.razzotto.InicialController;
 import com.razzotto.Pessoa;
 import com.razzotto.model.Processamento;
 
-public class ConversaoArquivos implements Runnable{
+public class ConversaoArquivos implements Runnable{/// classe substituida por task
 	
 	private String nameThread;
 	private Instant inicioLeituraFile;
