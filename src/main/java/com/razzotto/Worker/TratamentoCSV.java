@@ -24,7 +24,7 @@ public class TratamentoCSV implements Runnable {
 		
 	}
 	public int getQtdeRegistros(File dirOriginario) {
-		try (LineNumberReader lnr = new LineNumberReader(new FileReader(dirOriginario))){//colocar o caminho originario
+		try (LineNumberReader lnr = new LineNumberReader(new FileReader(dirOriginario))){
 			lnr.skip(Long.MAX_VALUE);
 			return lnr.getLineNumber() -1;
 			
@@ -34,31 +34,6 @@ public class TratamentoCSV implements Runnable {
 		}
 		return 0;
 	}
-	
-//	public void ObtencaodDeDados(InterfaceCSV controladoraconversao,File file) {
-//
-//		
-////		String[] Cabecalho = {"Number","Gender","NameSet","Title","GivenName","Surname","StreetAddress","City","State",
-////				"ZipCode","CountryFull","EmailAddress","Username","Password","TelephoneNumber","Birthday","CCType",
-////				"CCNumber","CVV2","CCExpires","NationalID","Color","Kilograms","Centimeters","GUID"};
-////		Iterable<CSVRecord> record = null;
-////		Reader ln = null;
-////		try {
-////			ln = new FileReader(file);
-////			record = CSVFormat.DEFAULT.withHeader(Cabecalho).withFirstRecordAsHeader().parse(ln);//O formato do CSV é defalt o comando a seguir dis que a linha é um cabeçalho
-////		} catch (FileNotFoundException e) {
-////			e.printStackTrace();
-////		} catch (IOException e) {
-////			e.printStackTrace();
-////		}
-////		
-////		for (CSVRecord registro : record)
-////		{
-////			controladoraconversao.addRegistro(registro); 
-////		}
-////		controladoraconversao.terminouLeituraCSV();
-//	}
-
 	@Override
 	public void run() {
 		try (Reader reader = new FileReader(fileCSV);){
@@ -72,12 +47,10 @@ public class TratamentoCSV implements Runnable {
 				Controller.addRegistroCSV(registro); 
 			}
 			Controller.setContinuaLeituraCSV(false);
-			Controller.terminouLeituraCSV();///
-
 			
 			
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 	}
 }

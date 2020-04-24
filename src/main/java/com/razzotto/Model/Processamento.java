@@ -10,8 +10,6 @@ import java.util.Vector;
 
 import com.google.gson.Gson;
 import com.razzotto.Entidade.Pessoa;
-import com.razzotto.Worker.ConversaoArquivos;
-import com.razzotto.Worker.EscritaArquivos;
 import com.razzotto.Worker.TratamentoCSV;
 
 import javafx.concurrent.Task;

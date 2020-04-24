@@ -1,4 +1,4 @@
-package com.razzotto.Worker;
+package com.razzotto.Entidade;
 
 public class Temporizacao {
 	private long TempodeAbertura;

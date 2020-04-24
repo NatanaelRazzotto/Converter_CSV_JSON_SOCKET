@@ -27,11 +27,8 @@ import javax.swing.text.StyledEditorKit.BoldAction;
 import com.google.gson.Gson;
 import com.razzotto.Controller.Controller;
 import com.razzotto.Entidade.Pessoa;
+import com.razzotto.Entidade.Temporizacao;
 import com.razzotto.Model.Processamento;
-import com.razzotto.Worker.ConversaoArquivos;
-import com.razzotto.Worker.EscritaArquivos;
-import com.razzotto.Worker.Temporizacao;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -79,7 +76,8 @@ public class InicialController implements javafx.fxml.Initializable{
      int ContadorProgressoa = 0;
      Boolean ControleStatus = true;
      File dirOriginario ;
-     static File dirDestinado;
+     File dirDestinado;
+     private int TotalRegistros;
      ///
      Controller controller;
  	@Override
@@ -128,19 +126,16 @@ public class InicialController implements javafx.fxml.Initializable{
 
     }
 
-	private int TotalRegistros;
+
     @FXML
     private void ConverterCSV(ActionEvent event) {
     	try {		
     	    	if ((dirOriginario != null)&&(dirDestinado!=null)) {
-				//btn_ConverteArquivo.setDisable(true);
 				btn_AbrirArquivo.setDisable(true);
 				btn_SalvarArquivo.setDisable(true);
 	    		txtA_Status.appendText("----------BEM VINDO-----------" + "\n");
 	   			System.out.println(dirOriginario);
 				System.out.println(dirDestinado);
-	    		//Calcula();
-				//ProcessoConversao();
 				controller = new Controller(dirOriginario,dirDestinado);
 				controller.Inicia();
 				btn_ConverteArquivo.setDisable(true);
@@ -149,10 +144,9 @@ public class InicialController implements javafx.fxml.Initializable{
 					if (!controller.IsContinuaLeituraCSV())
 						break;
 					
-				} while (TotalRegistros ==0);//Necessita de um controle onde se terminou leitura não é para chamar o atualizaCSV
+				} while (TotalRegistros == 0);//
+				
 				this.atualizaCSV();
-			//	PrB_ProgressoLeitura.progressProperty().bind(taskCSV.progressProperty());
-			//	new Thread(taskCSV).start();
 	    		}
 				else {
 				    Alert alert = new Alert(AlertType.ERROR);
@@ -176,15 +170,9 @@ public class InicialController implements javafx.fxml.Initializable{
     			int lidos = 0;
     			do {
     				lidos = controller.getQtdRegistros();
-					updateProgress(controller.getRegistrosLidos(), TotalRegistros);
-				//	updateMessage("\n"+ controller.getRegistrosLidos());
+    				updateProgress(controller.getRegistrosLidos(), TotalRegistros);
 				} while (controller.IsContinuaLeituraCSV());
-    			updateMessage("Total Linhas: " + "Total Linha" + "LinhasLidas" + lidos);
-    	
-//    			do {
-//    				updateProgress(controller.getQtdRegistros(), controller.getQtdRegistros());
-//    			} while (controller.IsContinuaLeituraCSV());
-//    		
+    			updateMessage("Foi Concluida a Leitura de " + lidos + " Registros do arquivo CSV");
     			return null;
     			
     		}
@@ -197,9 +185,8 @@ public class InicialController implements javafx.fxml.Initializable{
     			do {
     				lidos = controller.getQtdRegistros();
 					updateProgress(controller.getRegistrosConvertidos(), TotalRegistros);
-				//	updateMessage("\n"+ controller.getRegistrosConvertidos());
 				} while (controller.IsContinuaLeituraJSON());
-    		//	updateMessage("Total Linhas Json: " + "Total Linha" + "LinhasLidas" + lidos);
+    			updateMessage("Foi Concluida a Conversão de " + lidos + " Registros de CSV para JSON");
     			return null;
     			
     		}
@@ -212,21 +199,36 @@ public class InicialController implements javafx.fxml.Initializable{
     			do {
     				lidos = controller.getQtdRegistros();
 					updateProgress(controller.getRegistrosWriter(), TotalRegistros);
-					updateMessage("\n"+ controller.getRegistrosWriter());
 				} while (controller.IsContinuaEscrita());
     	
-    	//		updateMessage("Total Linhas Json: " + "Total Linha" + "LinhasLidas" + lidos);
+    			updateMessage("Foi Concluida a Escrita de " + lidos + " Registros em JSON");
     			return null;
     			
     		}
     	};
-		txtA_Status.appendText("\n"+taskCSV.getMessage());
+		taskCSV.messageProperty().addListener(new ChangeListener<String>() {
 
+			@Override
+			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
+				txtA_Status.appendText("\n"+taskCSV.getMessage());
+
+			}
+			
+		});
 		taskJon.messageProperty().addListener(new ChangeListener<String>() {
 
 			@Override
 			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
 				txtA_Status.appendText("\n"+taskJon.getMessage());
+
+			}
+			
+		});
+		taskEscritor.messageProperty().addListener(new ChangeListener<String>() {
+
+			@Override
+			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
+				txtA_Status.appendText("\n"+taskEscritor.getMessage());
 
 			}
 			
@@ -310,57 +312,9 @@ public class InicialController implements javafx.fxml.Initializable{
 		}
      
 	}
-    
-	public void UpdateProgress(int progresão, int maximo) {
-		try {
-			PrB_ProgressoLeitura.setProgress((double)progresão/maximo);
-			PrB_ProgressoLeitura.progressProperty().unbind();
-			txtA_Status.appendText(progresão + "\n");
-			} catch (Exception e) {
-				e.printStackTrace();
-		
-			} 
-	}
-
-	public void ProcessoConversao() {
-		try {
-			 new Controller(dirOriginario, dirDestinado);
-			//Processamento.gestaoProcessamentoTestar(PrB_ProgressoLeitura, PrB_ProecessoConversao, PrB_ProecessoEscrita,txtA_Status);
-		
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	Task task = new Task<Void>() {
-		
-		@Override
-		protected Void call() {
-			try {
-				final int max = 100000000;
-				for (int i=1;i<=max;i++)
-				{
-					if (isCancelled()){
-						break;
-					}
-					updateProgress(i, max);
-					if (i % 100 == 0)
-					{
-						updateMessage("Processados:"+ i);
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-			return null;
-			
-		}
-	};
 	public void LerTempos ()
 	{
 		try {
-//			long somTinicio = 0;
-//			long medTinicio = 0;
 			long somTLeitura = 0;
 			long medTLeitura = 0;
 			long somTParse = 0;
@@ -382,18 +336,15 @@ public class InicialController implements javafx.fxml.Initializable{
 				    ListadeTempos.add(tempo);
 				}
 				for (Temporizacao temporizacao : ListadeTempos) {
-					//somTinicio = somTinicio+ temporizacao.getTempodeAbertura();
-					somTLeitura = somTLeitura+ temporizacao.getTempodeLeitura();
+						somTLeitura = somTLeitura+ temporizacao.getTempodeLeitura();
 					somTParse = somTParse+ temporizacao.getTempodeConversao();
 					somEscrita = somEscrita+ temporizacao.getTempodeEscrita();
 				}
-			//	medTinicio = (somTinicio / ListadeTempos.size());
 				medTLeitura = (somTLeitura / ListadeTempos.size());
 				medTParse = (somTParse / ListadeTempos.size());
 				medEscrita = (somEscrita / ListadeTempos.size());
 				txtA_Status.appendText("//////Contabilização de Tempos de Processamento\\\\\\  \n");
 				txtA_Status.appendText("//////"+ListadeTempos.size()+" Já Processados! \\\\\\  \n");
-				//txtA_Status.appendText("* TEMPO MÉDIO DE ABERTURA: " + medTinicio + "Milesegundos \n");
 				txtA_Status.appendText("* TEMPO MÉDIO DE LEITURA: " + medTLeitura+ "Milesegundos \n");
 				txtA_Status.appendText("* TEMPO MÉDIO DE PARSE: " + medTParse+ "Milesegundos \n");
 				txtA_Status.appendText("* TEMPO MÉDIO DE ESCRITA: " + medEscrita+ "Milesegundos \n");
@@ -417,7 +368,6 @@ public class InicialController implements javafx.fxml.Initializable{
 				{		
 			    Map<Integer, String> tempos = controller.ContabilidadeTempo;
 				txtA_Status.appendText("//////O ultimo processamento teve como resultado!\\\\\\  \n");
-				//txtA_Status.appendText("* TEMPO MÉDIO DE ABERTURA: " + tempos.get(0) + "Milesegundos \n");
 				txtA_Status.appendText("* TEMPO MÉDIO DE LEITURA: " + tempos.get(1)+ "Milesegundos \n");
 				txtA_Status.appendText("* TEMPO MÉDIO DE PARSE: " + tempos.get(2)+ "Milesegundos \n");
 				txtA_Status.appendText("* TEMPO MÉDIO DE ESCRITA: " + tempos.get(3)+ "Milesegundos \n");

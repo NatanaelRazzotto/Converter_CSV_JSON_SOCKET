@@ -5,4 +5,5 @@ public interface InterfaceWriter {
 	public int getRegistrosWriter();
 	void setContinuaEscrita(boolean terminou);
 	void SetTempoIniciaWriter();
+	void SetTempoFinalWriter();
 }

@@ -33,33 +33,7 @@ public class EscritorJSON implements Runnable{
 		this.file = filedestino;
 		this.controller = controladora;
 	}
-	public void Escrever (File file, Controller controladora)
-	{
-		try {
-			System.out.println(controladora.ObjetosJson.get(0) +"restante");
-			FileWriter writer = new FileWriter(file, false);
-			System.out.println(controladora.ObjetosJson.get(1) +"restante");
-			do {		
-				System.out.println(controladora.ObjetosJson.get(0) +"restante");
-			String pessoaAtualGson = controladora.ObjetosJson.get(0);
-			controladora.ObjetosJson.remove(0);
-		
 
-			writer.write(pessoaAtualGson +"\n");
-			}
-			while(controladora.ObjetosJson.size()>0); {
-				writer.write("Terminou");
-				System.out.println(controladora.ObjetosJson.size() +"restante");
-				writer.close();
-			}
-		
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.out.println(controladora.ObjetosJson.size() +"deu erro");
-			e.printStackTrace();
-		}
-	}
 	@Override
 	public void run() {
 		try {

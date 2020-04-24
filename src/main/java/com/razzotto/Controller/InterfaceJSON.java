@@ -8,6 +8,8 @@ public interface InterfaceJSON {
 	public boolean emOperacao();
 	public CSVRecord obterCSV();
 	public void addJson(String ObjGson);
-	void SetTempoInicialJson();
+	public void SetTempoInicialJson();
+	public void SetTempoFinalJson();
+	public int getRegistrosConvertidos();
 
 }
