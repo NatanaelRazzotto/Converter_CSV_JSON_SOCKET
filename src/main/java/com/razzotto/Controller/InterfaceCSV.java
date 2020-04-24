@@ -9,4 +9,5 @@ public interface InterfaceCSV {//Issa interface permite fazer um vinculo entre d
 	public void terminouLeituraCSV();
 	public void setContinuaLeituraCSV(boolean terminou);
 	public void addRegistroCSV(CSVRecord csvrecord);
+	void SetTempoInicial();
 }

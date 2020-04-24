@@ -3,7 +3,10 @@ package com.razzotto.Controller;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.csv.CSVRecord;
@@ -13,6 +16,7 @@ import com.razzotto.Model.Processamento;
 import com.razzotto.Worker.ConversorJSON;
 import com.razzotto.Worker.EscritorJSON;
 import com.razzotto.Worker.TratamentoCSV;
+import com.razzotto.Worker.TratamentoTempo;
 import com.sun.javafx.webkit.ThemeClientImpl;
 
 import javafx.scene.control.ProgressBar;
@@ -21,8 +25,9 @@ import javafx.scene.control.TextArea;
 public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter {
 	// public static Vector<String>ContabilidadeTempo = new Vector<String>();
 	private List<CSVRecord> filaCSV = null;
-//    public Vector<Pessoa> ListaPessoasJson = null;
-	public Vector<String> ObjetosJson = new Vector<String>();
+	public Vector<String> ObjetosJson = null;
+	//public Vector<String>ContabilidadeTempo = null;
+	public Map<Integer, String> ContabilidadeTempo = null;
 	private File dirOriginario;
 	private boolean ContinuaLeituraCSV = true;
 	private File dirDestinado;
@@ -32,6 +37,13 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 	private int RegistrosEscritos;
 	private boolean ContinuaEscrita = true;
 	private boolean ContinuaConversaoJSON = true;
+	private Instant inicioLeituraFile;
+	private Instant FimLeituraFile;
+	private Instant inicioLeituraFileJSON;
+	private Instant inicioLeituraFileWRITER;
+	private Instant FimLeituraFileJson;
+	private Instant FimLeituraFileWriter;
+	private boolean controle;
 
 	// static int ContadorProgresso = 0;
 	// static int QTDrowsArquivoAtual;
@@ -59,6 +71,8 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 		// dirDestinado = "C:\\Users\\Casa\\Documents\\TESTES PROGRAMAS CSV\\i3";
 		filaCSV = new Vector<CSVRecord>();
 		ObjetosJson = new Vector<String>();
+		//ContabilidadeTempo =  new Vector<String>();
+		ContabilidadeTempo = new HashMap<Integer, String>();
 
 		// new EscritorJSON().Escrever(dirDestinado, ObjetosJson);
 
@@ -87,8 +101,33 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 		tEcritor.setName("Thread_tEcritor");
 		tEcritor.start();
 	}
-
+	@Override
+	public synchronized void SetTempoInicial() {
+		this.inicioLeituraFile = Instant.now();
+	}
+	@Override
+	public synchronized void SetTempoInicialJson() {
+		this.inicioLeituraFileJSON = Instant.now();
+	}
+	@Override
+	public synchronized void SetTempoIniciaWriter() {
+		this.inicioLeituraFileWRITER = Instant.now();
+	}
+	public void SetTempoFinal() {
+		this.FimLeituraFile = Instant.now();
+	}
+	public void SetTempoFinalJson() {
+		this.FimLeituraFileJson = Instant.now();
+	}
+	public void SetTempoFinalWriter() {
+		this.FimLeituraFileWriter = Instant.now();
+	}
+	
+	public synchronized void ObterTempo(int chave,Instant Inicio, Instant Fim) {
+		new TratamentoTempo().obterDuracao(this, Inicio, Fim, chave);
+	}
 	private void converterJSON() {
+		SetTempoInicialJson();
 		Thread t1 = new Thread(new ConversorJSON(this));
 		Thread t2 = new Thread(new ConversorJSON(this));
 		Thread t3 = new Thread(new ConversorJSON(this));
@@ -142,6 +181,12 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 	}
 	@Override
 	public synchronized void setContinuaEscrita(boolean terminou) {
+		if ((this.ContinuaEscrita == true)&&(terminou == false))
+		{
+			SetTempoFinalWriter();
+			ObterTempo(3,this.inicioLeituraFileWRITER,this.FimLeituraFileWriter);
+			new TratamentoTempo().GerarLogsdeTempo(this);
+		}
 		ContinuaEscrita = terminou;
 
 	}
@@ -152,6 +197,11 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 
 	@Override
 	public synchronized void setContinuaLeituraCSV(boolean terminou) {
+		if ((this.ContinuaLeituraCSV == true)&&(terminou == false))
+		{
+			SetTempoFinal();
+			ObterTempo(1,this.inicioLeituraFile,this.FimLeituraFile);			
+		}
 		ContinuaLeituraCSV = terminou;
 
 	}
@@ -161,6 +211,13 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 	}
 	@Override
 	public void setContinuaLeituraJson(boolean terminou) {
+
+		if ((this.ContinuaConversaoJSON == true)&&(terminou == false)&&(controle = true))
+		{
+			controle = false;
+			SetTempoFinalJson();
+			ObterTempo(2,this.inicioLeituraFileJSON,this.FimLeituraFileJson);			
+		}
 		this.ContinuaConversaoJSON = terminou;
 		
 	}

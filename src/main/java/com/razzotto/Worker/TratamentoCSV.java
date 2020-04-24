@@ -62,16 +62,18 @@ public class TratamentoCSV implements Runnable {
 	@Override
 	public void run() {
 		try (Reader reader = new FileReader(fileCSV);){
+			Controller.SetTempoInicial();
 			CSVParser parser = CSVParser.parse(reader, CSVFormat.DEFAULT);
 			
-			Controller.setContinuaLeituraCSV(true);
 			for (CSVRecord registro : parser)
 			{
 				if (parser.getCurrentLineNumber()==1)
 					continue;
 				Controller.addRegistroCSV(registro); 
 			}
-			Controller.terminouLeituraCSV();
+			Controller.setContinuaLeituraCSV(false);
+			Controller.terminouLeituraCSV();///
+
 			
 			
 		} catch (Exception e) {

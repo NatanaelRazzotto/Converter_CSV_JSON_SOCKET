@@ -38,6 +38,7 @@ public class ConversorJSON implements Runnable {
 		} while (controller.emOperacao());
 		{
 			controller.setContinuaLeituraJson(false);
+			
 		}
 
 	}

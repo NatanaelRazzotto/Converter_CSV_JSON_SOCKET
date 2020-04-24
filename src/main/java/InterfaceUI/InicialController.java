@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -176,6 +177,7 @@ public class InicialController implements javafx.fxml.Initializable{
     			do {
     				lidos = controller.getQtdRegistros();
 					updateProgress(controller.getRegistrosLidos(), TotalRegistros);
+				//	updateMessage("\n"+ controller.getRegistrosLidos());
 				} while (controller.IsContinuaLeituraCSV());
     			updateMessage("Total Linhas: " + "Total Linha" + "LinhasLidas" + lidos);
     	
@@ -195,8 +197,9 @@ public class InicialController implements javafx.fxml.Initializable{
     			do {
     				lidos = controller.getQtdRegistros();
 					updateProgress(controller.getRegistrosConvertidos(), TotalRegistros);
+				//	updateMessage("\n"+ controller.getRegistrosConvertidos());
 				} while (controller.IsContinuaLeituraJSON());
-    			updateMessage("Total Linhas Json: " + "Total Linha" + "LinhasLidas" + lidos);
+    		//	updateMessage("Total Linhas Json: " + "Total Linha" + "LinhasLidas" + lidos);
     			return null;
     			
     		}
@@ -209,21 +212,16 @@ public class InicialController implements javafx.fxml.Initializable{
     			do {
     				lidos = controller.getQtdRegistros();
 					updateProgress(controller.getRegistrosWriter(), TotalRegistros);
+					updateMessage("\n"+ controller.getRegistrosWriter());
 				} while (controller.IsContinuaEscrita());
-    			updateMessage("Total Linhas Json: " + "Total Linha" + "LinhasLidas" + lidos);
+    	
+    	//		updateMessage("Total Linhas Json: " + "Total Linha" + "LinhasLidas" + lidos);
     			return null;
     			
     		}
     	};
-		taskCSV.messageProperty().addListener(new ChangeListener<String>() {
+		txtA_Status.appendText("\n"+taskCSV.getMessage());
 
-			@Override
-			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
-				txtA_Status.appendText("\n"+taskCSV.getMessage());
-
-			}
-			
-		});
 		taskJon.messageProperty().addListener(new ChangeListener<String>() {
 
 			@Override
@@ -361,8 +359,8 @@ public class InicialController implements javafx.fxml.Initializable{
 	public void LerTempos ()
 	{
 		try {
-			long somTinicio = 0;
-			long medTinicio = 0;
+//			long somTinicio = 0;
+//			long medTinicio = 0;
 			long somTLeitura = 0;
 			long medTLeitura = 0;
 			long somTParse = 0;
@@ -378,25 +376,24 @@ public class InicialController implements javafx.fxml.Initializable{
 				while (( row = csvReader.readLine()) != null) {
 				    String[] arquivoMemoria = row.split(",");
 				    Temporizacao tempo = new Temporizacao();
-				    tempo.setTempodeAbertura(Long.parseLong(arquivoMemoria[0]));
-				    tempo.setTempodeLeitura(Long.parseLong(arquivoMemoria[1]));
-				    tempo.setTempodeConversao(Long.parseLong(arquivoMemoria[2]));
-				    tempo.setTempodeEscrita(Long.parseLong(arquivoMemoria[3]));
+				    tempo.setTempodeLeitura(Long.parseLong(arquivoMemoria[0]));
+				    tempo.setTempodeConversao(Long.parseLong(arquivoMemoria[1]));
+				    tempo.setTempodeEscrita(Long.parseLong(arquivoMemoria[2]));
 				    ListadeTempos.add(tempo);
 				}
 				for (Temporizacao temporizacao : ListadeTempos) {
-					somTinicio = somTinicio+ temporizacao.getTempodeAbertura();
+					//somTinicio = somTinicio+ temporizacao.getTempodeAbertura();
 					somTLeitura = somTLeitura+ temporizacao.getTempodeLeitura();
 					somTParse = somTParse+ temporizacao.getTempodeConversao();
 					somEscrita = somEscrita+ temporizacao.getTempodeEscrita();
 				}
-				medTinicio = (somTinicio / ListadeTempos.size());
+			//	medTinicio = (somTinicio / ListadeTempos.size());
 				medTLeitura = (somTLeitura / ListadeTempos.size());
 				medTParse = (somTParse / ListadeTempos.size());
 				medEscrita = (somEscrita / ListadeTempos.size());
 				txtA_Status.appendText("//////Contabilização de Tempos de Processamento\\\\\\  \n");
 				txtA_Status.appendText("//////"+ListadeTempos.size()+" Já Processados! \\\\\\  \n");
-				txtA_Status.appendText("* TEMPO MÉDIO DE ABERTURA: " + medTinicio + "Milesegundos \n");
+				//txtA_Status.appendText("* TEMPO MÉDIO DE ABERTURA: " + medTinicio + "Milesegundos \n");
 				txtA_Status.appendText("* TEMPO MÉDIO DE LEITURA: " + medTLeitura+ "Milesegundos \n");
 				txtA_Status.appendText("* TEMPO MÉDIO DE PARSE: " + medTParse+ "Milesegundos \n");
 				txtA_Status.appendText("* TEMPO MÉDIO DE ESCRITA: " + medEscrita+ "Milesegundos \n");
@@ -414,19 +411,26 @@ public class InicialController implements javafx.fxml.Initializable{
 	public void Tempo ()
 	{
 		try {
-		if (Processamento.ContabilidadeTempo.size() > 0)
-		{		
-		List<String> tempos = Processamento.ContabilidadeTempo;
-		txtA_Status.appendText("//////O ultimo processamento teve como resultado!\\\\\\  \n");
-		txtA_Status.appendText("* TEMPO MÉDIO DE ABERTURA: " + tempos.get(0) + "Milesegundos \n");
-		txtA_Status.appendText("* TEMPO MÉDIO DE LEITURA: " + tempos.get(1)+ "Milesegundos \n");
-		txtA_Status.appendText("* TEMPO MÉDIO DE PARSE: " + tempos.get(2)+ "Milesegundos \n");
-		txtA_Status.appendText("* TEMPO MÉDIO DE ESCRITA: " + tempos.get(3)+ "Milesegundos \n");
-		}
-		else 
-		{
-			txtA_Status.appendText("//////O programa não rodou ainda!\\\\\\  \n");
-		}
+			if (controller != null)
+			{
+				if (controller.ContabilidadeTempo.size() > 0)
+				{		
+			    Map<Integer, String> tempos = controller.ContabilidadeTempo;
+				txtA_Status.appendText("//////O ultimo processamento teve como resultado!\\\\\\  \n");
+				//txtA_Status.appendText("* TEMPO MÉDIO DE ABERTURA: " + tempos.get(0) + "Milesegundos \n");
+				txtA_Status.appendText("* TEMPO MÉDIO DE LEITURA: " + tempos.get(1)+ "Milesegundos \n");
+				txtA_Status.appendText("* TEMPO MÉDIO DE PARSE: " + tempos.get(2)+ "Milesegundos \n");
+				txtA_Status.appendText("* TEMPO MÉDIO DE ESCRITA: " + tempos.get(3)+ "Milesegundos \n");
+				}
+				else 
+				{
+					txtA_Status.appendText("//////O programa não rodou ainda!\\\\\\  \n");
+				}
+			}
+			else 
+			{
+				txtA_Status.appendText("//////O programa não rodou ainda!\\\\\\  \n");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

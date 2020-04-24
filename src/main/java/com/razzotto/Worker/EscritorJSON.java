@@ -64,6 +64,7 @@ public class EscritorJSON implements Runnable{
 	public void run() {
 		try {
 //			System.out.println(controller.ObjetosJson.get(0) +"restante");
+			controller.SetTempoIniciaWriter();
 			FileWriter writer = new FileWriter(file, false);
 	//		System.out.println(controller.ObjetosJson.get(1) +"restante");
 			do {		
