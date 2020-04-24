@@ -1,4 +1,4 @@
-package com.razzotto;
+package InterfaceUI;
 
 import java.io.BufferedReader;
 import java.io.Console;
@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -22,13 +24,18 @@ import javax.swing.JFrame;
 import javax.swing.text.StyledEditorKit.BoldAction;
 
 import com.google.gson.Gson;
-import com.razzotto.model.Processamento;
-import com.razzotto.worker.ConversaoArquivos;
-import com.razzotto.worker.EscritaArquivos;
-import com.razzotto.worker.Temporizacao;
+import com.razzotto.Controller.Controller;
+import com.razzotto.Entidade.Pessoa;
+import com.razzotto.Model.Processamento;
+import com.razzotto.Worker.ConversaoArquivos;
+import com.razzotto.Worker.EscritaArquivos;
+import com.razzotto.Worker.Temporizacao;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -37,7 +44,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 
-public class InicialController {
+public class InicialController implements javafx.fxml.Initializable{
     @FXML
     private Button btn_AbrirArquivo;
     @FXML
@@ -72,7 +79,13 @@ public class InicialController {
      Boolean ControleStatus = true;
      File dirOriginario ;
      static File dirDestinado;
-    
+     ///
+     Controller controller;
+ 	@Override
+ 	public void initialize(URL location, ResourceBundle resources) {
+ 		//btn_ConverteArquivo.setDisable(true);
+ 		 		
+ 	}
      @FXML////////////////////////////////////////////////////////////
      private void AbrirTempo(ActionEvent event) {
      	try {
@@ -113,18 +126,32 @@ public class InicialController {
 		}
 
     }
+
+	private int TotalRegistros;
     @FXML
     private void ConverterCSV(ActionEvent event) {
     	try {		
     	    	if ((dirOriginario != null)&&(dirDestinado!=null)) {
-				btn_ConverteArquivo.setDisable(true);
+				//btn_ConverteArquivo.setDisable(true);
 				btn_AbrirArquivo.setDisable(true);
 				btn_SalvarArquivo.setDisable(true);
 	    		txtA_Status.appendText("----------BEM VINDO-----------" + "\n");
 	   			System.out.println(dirOriginario);
 				System.out.println(dirDestinado);
 	    		//Calcula();
-				ProcessoConversao();
+				//ProcessoConversao();
+				controller = new Controller(dirOriginario,dirDestinado);
+				controller.Inicia();
+				btn_ConverteArquivo.setDisable(true);
+				do {
+					TotalRegistros = controller.getQtdRegistros();
+					if (!controller.IsContinuaLeituraCSV())
+						break;
+					
+				} while (TotalRegistros ==0);//Necessita de um controle onde se terminou leitura não é para chamar o atualizaCSV
+				this.atualizaCSV();
+			//	PrB_ProgressoLeitura.progressProperty().bind(taskCSV.progressProperty());
+			//	new Thread(taskCSV).start();
 	    		}
 				else {
 				    Alert alert = new Alert(AlertType.ERROR);
@@ -140,7 +167,84 @@ public class InicialController {
 		}
 
     }
-    public File Captura_Arquivo(){////////
+    private void atualizaCSV() {
+    	Task taskCSV = new Task<Void>() {
+    		
+    		@Override
+    		protected Void call() {
+    			int lidos = 0;
+    			do {
+    				lidos = controller.getQtdRegistros();
+					updateProgress(controller.getRegistrosLidos(), TotalRegistros);
+				} while (controller.IsContinuaLeituraCSV());
+    			updateMessage("Total Linhas: " + "Total Linha" + "LinhasLidas" + lidos);
+    	
+//    			do {
+//    				updateProgress(controller.getQtdRegistros(), controller.getQtdRegistros());
+//    			} while (controller.IsContinuaLeituraCSV());
+//    		
+    			return null;
+    			
+    		}
+    	};
+    	Task taskJon = new Task<Void>() {
+    		
+    		@Override
+    		protected Void call() {
+    			int lidos = 0;
+    			do {
+    				lidos = controller.getQtdRegistros();
+					updateProgress(controller.getRegistrosConvertidos(), TotalRegistros);
+				} while (controller.IsContinuaLeituraJSON());
+    			updateMessage("Total Linhas Json: " + "Total Linha" + "LinhasLidas" + lidos);
+    			return null;
+    			
+    		}
+    	};
+    	Task taskEscritor = new Task<Void>() {
+    		
+    		@Override
+    		protected Void call() {
+    			int lidos = 0;
+    			do {
+    				lidos = controller.getQtdRegistros();
+					updateProgress(controller.getRegistrosWriter(), TotalRegistros);
+				} while (controller.IsContinuaEscrita());
+    			updateMessage("Total Linhas Json: " + "Total Linha" + "LinhasLidas" + lidos);
+    			return null;
+    			
+    		}
+    	};
+		taskCSV.messageProperty().addListener(new ChangeListener<String>() {
+
+			@Override
+			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
+				txtA_Status.appendText("\n"+taskCSV.getMessage());
+
+			}
+			
+		});
+		taskJon.messageProperty().addListener(new ChangeListener<String>() {
+
+			@Override
+			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
+				txtA_Status.appendText("\n"+taskJon.getMessage());
+
+			}
+			
+		});
+			PrB_ProgressoLeitura.progressProperty().bind(taskCSV.progressProperty());
+			new Thread(taskCSV).start();
+
+			PrB_ProecessoConversao.progressProperty().bind(taskJon.progressProperty());
+			new Thread(taskJon).start();
+			
+			PrB_ProecessoEscrita.progressProperty().bind(taskEscritor.progressProperty());
+			new Thread(taskEscritor).start();
+		
+		
+	}
+	public File Captura_Arquivo(){////////
     	try {
 	    JFileChooser file_chooser = new JFileChooser();
     	StringBuilder sb = new StringBuilder();
@@ -217,17 +321,43 @@ public class InicialController {
 			} catch (Exception e) {
 				e.printStackTrace();
 		
-			}
+			} 
 	}
 
 	public void ProcessoConversao() {
 		try {
-			Processamento.gestaoProcessamento(PrB_ProgressoLeitura, PrB_ProecessoConversao, PrB_ProecessoEscrita,txtA_Status);
+			 new Controller(dirOriginario, dirDestinado);
+			//Processamento.gestaoProcessamentoTestar(PrB_ProgressoLeitura, PrB_ProecessoConversao, PrB_ProecessoEscrita,txtA_Status);
 		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	Task task = new Task<Void>() {
+		
+		@Override
+		protected Void call() {
+			try {
+				final int max = 100000000;
+				for (int i=1;i<=max;i++)
+				{
+					if (isCancelled()){
+						break;
+					}
+					updateProgress(i, max);
+					if (i % 100 == 0)
+					{
+						updateMessage("Processados:"+ i);
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+			return null;
+			
+		}
+	};
 	public void LerTempos ()
 	{
 		try {
@@ -302,6 +432,7 @@ public class InicialController {
 		}
 		
 	}
+
 
 		
 	

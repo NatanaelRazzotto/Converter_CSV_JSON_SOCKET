@@ -1,4 +1,6 @@
-package com.razzotto;
+package InterfaceUI;
+
+import com.razzotto.Controller.Controller;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -14,19 +16,17 @@ public class Principal extends Application{
 		try {
 			Pane root = FXMLLoader.load(getClass().getResource("TelaPrincipal.fxml"));
 			Scene scene = new Scene (root,553,274);
+			//Controller controller = new Control
 			primaryStage.setScene(scene);
 			primaryStage.show();
-			/*BorderPane root = new BorderPane();
-			Scene scene = new Scene (root,400,400);
-			scene.getStylesheets().add(getClass().getResource("TelaPrincipal.fxml").toExternalForm());
-			primaryStage.setScene(scene);
-			primaryStage.show();*/
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			// TODO: handle exception
 		}
 	}	
 	public static void main(String[] args) {
+		// new Controller(dirOriginario, dirDestinado);
 		launch(args);
 
 	}

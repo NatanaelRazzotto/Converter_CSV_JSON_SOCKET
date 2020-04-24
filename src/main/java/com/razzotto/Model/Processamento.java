@@ -1,4 +1,4 @@
-package com.razzotto.model;
+package com.razzotto.Model;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,9 +9,10 @@ import java.time.Instant;
 import java.util.Vector;
 
 import com.google.gson.Gson;
-import com.razzotto.Pessoa;
-import com.razzotto.worker.ConversaoArquivos;
-import com.razzotto.worker.EscritaArquivos;
+import com.razzotto.Entidade.Pessoa;
+import com.razzotto.Worker.ConversaoArquivos;
+import com.razzotto.Worker.EscritaArquivos;
+import com.razzotto.Worker.TratamentoCSV;
 
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressBar;
@@ -39,8 +40,13 @@ public class Processamento {
     static int ContadorProgresso = 0;
     static int QTDrowsArquivoAtual;
     static int MaximoProgresso;
+    public static void gestaoProcessamentoTestar (ProgressBar pB_Leitura, ProgressBar pB_Conversao, ProgressBar pB_Escrita, TextArea txtA_Status)
+ 	{
+    //	new TratamentoCSV().ObtencaodDeDados(dirOriginario);
+ 	}
     public static void gestaoProcessamento (ProgressBar pB_Leitura, ProgressBar pB_Conversao, ProgressBar pB_Escrita, TextArea txtA_Status)
 	{
+    	
 		try {
 			    String row;
 			    QTDrowsArquivoAtual = 0;

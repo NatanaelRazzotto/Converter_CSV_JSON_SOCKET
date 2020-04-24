@@ -1,12 +1,13 @@
-package com.razzotto.worker;
+package com.razzotto.Worker;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Instant;
 
-import com.razzotto.InicialController;
-import com.razzotto.model.Processamento;
+import com.razzotto.Model.Processamento;
+
+import InterfaceUI.InicialController;
 
 public class EscritaArquivos implements Runnable{ /// classe substituida por task
 	

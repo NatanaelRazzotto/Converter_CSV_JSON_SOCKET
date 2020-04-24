@@ -1,4 +1,4 @@
-package com.razzotto;
+package com.razzotto.Entidade;
 
 public class Pessoa {
 	public Pessoa(String codigo, String gender, String nameSet, String title, String givenName, String surname,
@@ -34,30 +34,30 @@ public class Pessoa {
 		GUID = gUID;
 	}
 	String Codigo;
-String Gender;
-String NameSet;
-String Title;
-String GivenName;
-String Surname;
-String StreetAddress;
-String City;
-String State;
-String ZipCode;
-String CountryFull;
-String EmailAddress;
-String Username;
-String Password;
-String TelephoneNumber;
-String Birthday;//////
-String CCType;
-String CCNumber;
-String CVV2;
-String CCExpires;
-String NationalID;
-String Color;
-String Kilograms;
-String Centimeters;
-String GUID;
+	String Gender;
+	String NameSet;
+	String Title;
+	String GivenName;
+	String Surname;
+	String StreetAddress;
+	String City;
+	String State;
+	String ZipCode;
+	String CountryFull;
+	String EmailAddress;
+	String Username;
+	String Password;
+	String TelephoneNumber;
+	String Birthday;//////
+	String CCType;
+	String CCNumber;
+	String CVV2;
+	String CCExpires;
+	String NationalID;
+	String Color;
+	String Kilograms;
+	String Centimeters;
+	String GUID;
 //25
 public String getCodigo() {
 	return Codigo;

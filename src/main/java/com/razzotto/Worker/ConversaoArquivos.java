@@ -1,11 +1,12 @@
-package com.razzotto.worker;
+package com.razzotto.Worker;
 
 import java.time.Instant;
 
 import com.google.gson.Gson;
-import com.razzotto.InicialController;
-import com.razzotto.Pessoa;
-import com.razzotto.model.Processamento;
+import com.razzotto.Entidade.Pessoa;
+import com.razzotto.Model.Processamento;
+
+import InterfaceUI.InicialController;
 
 public class ConversaoArquivos implements Runnable{/// classe substituida por task
 	
