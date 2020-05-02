@@ -29,6 +29,8 @@ import com.razzotto.Controller.Controller;
 import com.razzotto.Entidade.Pessoa;
 import com.razzotto.Entidade.Temporizacao;
 import com.razzotto.Model.Processamento;
+import com.razzotto.Worker.AplicacaoCliente;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -136,17 +138,19 @@ public class InicialController implements javafx.fxml.Initializable{
 	    		txtA_Status.appendText("----------BEM VINDO-----------" + "\n");
 	   			System.out.println(dirOriginario);
 				System.out.println(dirDestinado);
-				controller = new Controller(dirOriginario,dirDestinado);
-				controller.Inicia();
-				btn_ConverteArquivo.setDisable(true);
-				do {
-					TotalRegistros = controller.getQtdRegistros();
-					if (!controller.IsContinuaLeituraCSV())
-						break;
-					
-				} while (TotalRegistros == 0);//
+				AplicacaoCliente cliente = new AplicacaoCliente(12345);
+				cliente.conectorClienteServer("dirorigi","dirfinal");
+				//controller = new Controller(dirOriginario,dirDestinado);
+				//controller.Inicia();
+//				btn_ConverteArquivo.setDisable(true);
+//				do {
+//					TotalRegistros = controller.getQtdRegistros();
+//					if (!controller.IsContinuaLeituraCSV())
+//						break;
+//					
+//				} while (TotalRegistros == 0);//
 				
-				this.atualizaCSV();
+				//this.atualizaCSV();
 	    		}
 				else {
 				    Alert alert = new Alert(AlertType.ERROR);
