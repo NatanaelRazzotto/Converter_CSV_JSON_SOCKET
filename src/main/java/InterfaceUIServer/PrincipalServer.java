@@ -1,21 +1,17 @@
-package InterfaceUI;
-
-import com.razzotto.Controller.Controller;
+package InterfaceUIServer;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-public class Principal extends Application{
-	
+public class PrincipalServer extends Application{
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			Pane root = FXMLLoader.load(getClass().getResource("TelaPrincipal.fxml"));
-			Scene scene = new Scene (root,553,274);
+			Pane root = FXMLLoader.load(getClass().getResource("TelaPrincipalServer.fxml"));
+			Scene scene = new Scene (root,553,199);
 			//Controller controller = new Control
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -30,5 +26,4 @@ public class Principal extends Application{
 		launch(args);
 
 	}
-
 }

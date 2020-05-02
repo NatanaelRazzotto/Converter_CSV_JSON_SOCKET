@@ -1,4 +1,4 @@
-package InterfaceUI;
+package InterfaceUICliente;
 
 import java.io.BufferedReader;
 import java.io.Console;
@@ -139,7 +139,7 @@ public class InicialController implements javafx.fxml.Initializable{
 	   			System.out.println(dirOriginario);
 				System.out.println(dirDestinado);
 				AplicacaoCliente cliente = new AplicacaoCliente(12345);
-				cliente.conectorClienteServer("dirorigi","dirfinal");
+				cliente.conectorClienteServer(dirOriginario,dirDestinado);
 				//controller = new Controller(dirOriginario,dirDestinado);
 				//controller.Inicia();
 //				btn_ConverteArquivo.setDisable(true);

@@ -1,30 +1,36 @@
 package com.razzotto.Entidade;
 
+import java.io.File;
 import java.io.Serializable;
 
 public class Arquivo implements Serializable {
-	 /**
-	 * 
-	 */
 	private static final long serialVersionUID = 5950169519310163575L;
-	String diretorioOriginario;
-	String diretorioDestinado;
-	public Arquivo(String diretorioOriginario, String diretorioDestinado) {
+	File diretorioOriginario;
+	File diretorioDestinado;
+	String nomeArquivo;
+	public Arquivo(File diretorioOriginario, File diretorioDestinado, String nomeArquivo) {
 		super();
 		this.diretorioOriginario = diretorioOriginario;
 		this.diretorioDestinado = diretorioDestinado;
+		this.nomeArquivo = nomeArquivo;
 	}
-	public String getDiretorioOriginario() {
+	public File getDiretorioOriginario() {
 		return diretorioOriginario;
 	}
-	public void setDiretorioOriginario(String diretorioOriginario) {
+	public void setDiretorioOriginario(File diretorioOriginario) {
 		this.diretorioOriginario = diretorioOriginario;
 	}
-	public String getDiretorioDestinado() {
+	public File getDiretorioDestinado() {
 		return diretorioDestinado;
 	}
-	public void setDiretorioDestinado(String diretorioDestinado) {
+	public void setDiretorioDestinado(File diretorioDestinado) {
 		this.diretorioDestinado = diretorioDestinado;
+	}
+	public String getNomeArquivo() {
+		return nomeArquivo;
+	}
+	public void setNomeArquivo(String nomeArquivo) {
+		this.nomeArquivo = nomeArquivo;
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
@@ -32,7 +38,7 @@ public class Arquivo implements Serializable {
 	@Override
 	public String toString() {
 		return "Arquivo [diretorioOriginario=" + diretorioOriginario + ", diretorioDestinado=" + diretorioDestinado
-				+ "]";
+				+ ", nomeArquivo=" + nomeArquivo + "]";
 	}
 	@Override
 	public int hashCode() {
@@ -40,6 +46,7 @@ public class Arquivo implements Serializable {
 		int result = 1;
 		result = prime * result + ((diretorioDestinado == null) ? 0 : diretorioDestinado.hashCode());
 		result = prime * result + ((diretorioOriginario == null) ? 0 : diretorioOriginario.hashCode());
+		result = prime * result + ((nomeArquivo == null) ? 0 : nomeArquivo.hashCode());
 		return result;
 	}
 	@Override
@@ -61,9 +68,17 @@ public class Arquivo implements Serializable {
 				return false;
 		} else if (!diretorioOriginario.equals(other.diretorioOriginario))
 			return false;
+		if (nomeArquivo == null) {
+			if (other.nomeArquivo != null)
+				return false;
+		} else if (!nomeArquivo.equals(other.nomeArquivo))
+			return false;
 		return true;
 	}
 	
+	
+	
+
 
 
 }

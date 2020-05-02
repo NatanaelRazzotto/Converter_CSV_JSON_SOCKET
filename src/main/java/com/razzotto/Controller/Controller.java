@@ -66,6 +66,7 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 		this.TratamentodeCSV();
 		this.converterJSON();
 		this.EscritordeJSON();
+		System.out.println("Terminou com sucesso");
 
 	}
 	public synchronized void ObterTempo(int chave,Instant Inicio, Instant Fim) {

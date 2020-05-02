@@ -31,7 +31,7 @@ public class AplicacaoCliente {
 		}
 	}
 
-	public void conectorClienteServer (String dirArquivoOriginario, String dirDestinadoSalvamento) throws IOException
+	public void conectorClienteServer (File dirArquivoOriginario, File dirDestinadoSalvamento) throws IOException
 	{
 //		Arquivo arquivo = new Arquivo(dirArquivoOriginario, dirDestinadoSalvamento);
 //		try {
@@ -45,13 +45,13 @@ public class AplicacaoCliente {
 		mensagem = "caminho";
 		while (!cliente.isClosed()) {
 			//System.out.print("Digite sua mensagem (ou digite \"sair\"): ");
-			Arquivo arquivo = new Arquivo(dirArquivoOriginario, dirDestinadoSalvamento);
+			Arquivo arquivo = new Arquivo(dirArquivoOriginario,dirDestinadoSalvamento,mensagem);
 			System.out.print("Objeto arquivo ");
 			saida.writeObject(arquivo);
 
-			if (dirDestinadoSalvamento.equals("sair") || !cliente.isConnected())
+			if (mensagem.equals("sair") || !cliente.isConnected())
 				cliente.close();
-			dirDestinadoSalvamento = "sair";
+			mensagem = "sair";
 		}
 		System.out.println("Conexão encerrada!!!!");
 
