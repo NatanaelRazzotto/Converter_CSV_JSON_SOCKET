@@ -18,8 +18,6 @@ import javafx.concurrent.Task;
 public class AplicacaoServer extends Thread{
 	Controller controller;
 	private Socket conexao;
-	boolean controleConectado;
-	boolean controleNovo;
 	public AplicacaoServer(Socket s){//recebe o valor do socket enviado na thread
 		conexao = s;
 	}
@@ -45,6 +43,10 @@ public class AplicacaoServer extends Thread{
 	public void run(){
 		ObjectInputStream scanner;
 		ObjectOutputStream outToClient;
+		boolean controleConectado;
+		boolean controleNovo = true;
+		Arquivo arquivo = new Arquivo();
+		arquivo.setManterConectado(true);
 		try {
 			scanner = new ObjectInputStream(conexao.getInputStream());
 			outToClient = new ObjectOutputStream(conexao.getOutputStream());
@@ -55,13 +57,15 @@ public class AplicacaoServer extends Thread{
 			try {
 				//Arquivo arquivo = new Arquivo();
 			    outToClient.flush();
-				Arquivo arquivo  = (Arquivo) scanner.readObject();
+			  
+			    if (arquivo.getManterConectado()==true)
+			    {
+				arquivo  = (Arquivo) scanner.readObject();
 				System.out.println(arquivo);
 				System.out.println(arquivo.getDiretorioOriginario());
 				System.out.println("status   " + arquivo.getStartNovoProcesso());
 
-			    if (arquivo.getManterConectado()==true)
-			    {
+			 
 			    	 if (arquivo.getStartNovoProcesso()==true)
 					    {
 			    	    	System.out.println("true----------");
@@ -71,11 +75,24 @@ public class AplicacaoServer extends Thread{
 			       			System.out.println("destino " +arquivo.getDiretorioDestinado());
 						
 						    arquivo.setStartNovoProcesso(false);
+						    controleNovo = false;
 						    System.out.println( arquivo.getStartNovoProcesso());
+						    
+							int TotalRegistros =0;
+							do {
+								TotalRegistros = controller.getQtdRegistros();
+								if (!controller.IsContinuaLeituraCSV())
+									break;
+								
+							} while (TotalRegistros == 0);
+						    arquivo = obteratualizacoes(arquivo,controleNovo,true);
+							outToClient.writeObject(arquivo);
 					    }
 			    	 else
 			    	 {
 			    		 System.out.println("Processando----------");
+						    arquivo = obteratualizacoes(arquivo,controleNovo,true);
+							outToClient.writeObject(arquivo);
 			    	 }
 			
 			    	
@@ -87,6 +104,8 @@ public class AplicacaoServer extends Thread{
 			    	conexao.close();
 			    	break;
 			    }
+			    
+
 //			    boolean cont = true;
 //			    while (cont) {
 //			    	arquivo = obteratualizacoes(arquivo);
@@ -99,9 +118,9 @@ public class AplicacaoServer extends Thread{
 			//   Arquivo arquivoEnvio = new Arquivo();
 			  //  while (arquivoEnvio.getTerminouEscrita()) {
 			//	arquivo.setProgressLeitura(10000);
-			    	arquivo = obteratualizacoes(arquivo);
+			    	
 			    	//ProgressoArquivo pa = new ProgressoArquivo();
-					outToClient.writeObject(arquivo);
+				
 					//System.out.println(pa);
 			//    }
 			    System.out.println("Terminou server");
@@ -133,16 +152,21 @@ public class AplicacaoServer extends Thread{
 			e1.printStackTrace();
 		}
 		
-		
-    	Task taskControledeprogresso = new Task<Void>() {
-    		
-    		@Override
-    		protected Void call() {
-    			
-    			return null;
+    	
+	}
+	public Arquivo obteratualizacoes(Arquivo arquivonovo, boolean controleNovo, boolean controleConexao)
+	{
+		//Arquivo arquivonovo = new Arquivo();
 
-    		}
-    	};
+		arquivonovo.setProgressLeitura(controller.getRegistrosLidos());
+		arquivonovo.setProgressConversao(controller.getRegistrosConvertidos());
+		arquivonovo.setProgressEscrita(controller.getRegistrosWriter());
+		arquivonovo.setTamanhodoArquivo(controller.getQtdRegistros());
+		arquivonovo.setTerminouEscrita(controller.IsContinuaEscrita());
+		arquivonovo.setManterConectado(controller.IsContinuaEscrita());
+		arquivonovo.setStartNovoProcesso(controleNovo);
+		return arquivonovo;
+		
 	}
 
 	
@@ -195,23 +219,5 @@ public class AplicacaoServer extends Thread{
 //			}
 //			System.out.println("Servidor encerrado.");
 //		}
-	public Arquivo obteratualizacoes(Arquivo arquivonovo)
-	{
-		//Arquivo arquivonovo = new Arquivo();
-		
-//		arquivo.setProgressLeitura(40);
-//		arquivo.setProgressConversao(30);
-//		arquivo.setProgressEscrita(20);
-//
-//		return arquivo;
-		arquivonovo.setProgressLeitura(controller.getRegistrosLidos());
-		arquivonovo.setProgressConversao(controller.getRegistrosConvertidos());
-		arquivonovo.setProgressEscrita(controller.getRegistrosWriter());
-		arquivonovo.setTamanhodoArquivo(controller.getQtdRegistros());
-		arquivonovo.setTerminouEscrita(controller.IsContinuaEscrita());
-		arquivonovo.setManterConectado(controller.IsContinuaEscrita());
-		arquivonovo.setStartNovoProcesso(false);
-		return arquivonovo;
-		
-	}
+
 }

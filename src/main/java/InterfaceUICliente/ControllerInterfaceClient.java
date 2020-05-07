@@ -2,6 +2,9 @@ package InterfaceUICliente;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 import com.razzotto.Entidade.Arquivo;
 import com.razzotto.Worker.AplicacaoCliente;
@@ -27,6 +30,7 @@ public class ControllerInterfaceClient  {
 	private Boolean terminouLeitura;
 	private Boolean terminouConversao;
 	private Boolean terminouEscrita;
+	private String endereco;
 	
 	public ControllerInterfaceClient (InterfaceMain main, ProgressBar progressLeitura, ProgressBar progressConversão, 
 									ProgressBar progressEscrita, TextArea textarea, File dirOriginario, File dirDestinado) throws ClassNotFoundException, IOException {
@@ -35,20 +39,31 @@ public class ControllerInterfaceClient  {
 		 ProgressConversao =progressConversão;
 		 ProgressEscrita = progressEscrita;
 		 TextArea = textarea;
-		 AplicacaoCliente cliente = new AplicacaoCliente(this,12345,dirOriginario,dirDestinado);
-		// Thread tStart = new Thread(cliente);
-	//	 tStart.setName("Thread_TRATAStart");
-	//	 tStart.start();
-	//	 cliente.conectorClienteServer(dirOriginario,dirDestinado);
-//		 this.atualizaCSV();
-		
-		
+		 PreparaConexao(dirOriginario,dirDestinado);
+	}
+	public void PreparaConexao(File dirOriginario, File dirDestinado)
+	{
+		 try {
+			endereco = InetAddress.getByName("localhost").getHostAddress();
+			Socket Conexao = new Socket(endereco,12345);
+			Thread t = new AplicacaoCliente(Conexao,dirOriginario,dirDestinado,this);
+			t.start();
+			this.atualizaCSV();
+		 } catch (UnknownHostException e) {
+				System.out.println("Problema na obtenção de endereço IP");
+			} catch (IOException e) {
+			e.printStackTrace();
+			}
 	}
 	public void agregarProcessamento (Arquivo arquivo)
 	{
 		ProcessoLeitura = arquivo.getProgressLeitura();
+		System.out.println("agragação" +  arquivo.getProgressLeitura());
 		ProcessoConversao = arquivo.getProgressConversao();
+		System.out.println("agragação" +  arquivo.getProgressConversao());
 		ProcessoEscrita = arquivo.getProgressEscrita();
+		System.out.println("agragação" + arquivo.getProgressEscrita());
+		
 	//	ProcessoFilaCSV = arquivo.getProgressFilaCSV();
 	//	ProcessoFilaJson = arquivo.getProgressFilaJson();
 		tamanhodoArquivo = arquivo.getTamanhodoArquivo();
@@ -79,6 +94,7 @@ public class ControllerInterfaceClient  {
 	    			do {
 	    			//	lidos = controller.getQtdRegistros();
 						updateProgress(ProcessoConversao, tamanhodoArquivo);
+						System.out.println("teste testado testou " + ProcessoConversao);
 					} while (!terminouEscrita);
 	    			updateMessage("Foi Concluida a Conversão de " + tamanhodoArquivo + " Registros de CSV para JSON");
 	    			return null;

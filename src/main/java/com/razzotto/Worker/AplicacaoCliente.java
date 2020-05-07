@@ -39,9 +39,7 @@ public class AplicacaoCliente extends Thread{
 				controllerClient = controller;
 		
 				porta =pota;
-				Socket Conexao = new Socket(endereco,porta);
-				Thread t = new AplicacaoCliente(Conexao,dirArquivoOriginario,dirDestinadoSalvamento,controller);
-				t.start();
+
 			//	saida= new ObjectOutputStream (cliente.getOutputStream());
 			//	scannerServer = new ObjectInputStream(cliente.getInputStream());
 			} catch (IOException e) {
@@ -58,40 +56,7 @@ public class AplicacaoCliente extends Thread{
 		controllerClient = controller;
 	}
 
-//	public void conectorClienteServer (File dirArquivoOriginario, File dirDestinadoSalvamento) throws IOException, ClassNotFoundException
-//	{
-////		Arquivo arquivo = new Arquivo(dirArquivoOriginario, dirDestinadoSalvamento);
-////		try {
-////			saida.writeObject(arquivo);
-////			cliente.close();
-////			System.out.println("Conex„o encerrada!!!!");
-////		} catch (IOException e) {
-////			// TODO Auto-generated catch block
-////			e.printStackTrace();
-////		}
-//		mensagem = true;
-//		NovoProcesso = true;
-//		while (!cliente.isClosed()) {
-//			//System.out.print("Digite sua mensagem (ou digite \"sair\"): ");
-//			Arquivo arquivo = new Arquivo(dirArquivoOriginario,dirDestinadoSalvamento,mensagem,NovoProcesso);
-//			System.out.print("Objeto arquivo ");
-//			saida.writeObject(arquivo);
-//
-//			if (mensagem == false || !cliente.isConnected())
-//				cliente.close();
-//			else 
-//			{
-//				Arquivo arquivorecebido = (Arquivo) scannerServer.readObject();
-//				mensagem = arquivorecebido.getTerminouEscrita();
-//				controllerClient.agregarProcessamento(arquivorecebido);
-//				System.out.println("teste");
-//			}
-//			NovoProcesso = false;
-//		
-//		}
-//		System.out.println("Conex√£o encerrada!!!!");
-//
-//	}
+
 
 	public void run() {
 		try {
