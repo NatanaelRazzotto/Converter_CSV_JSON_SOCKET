@@ -127,7 +127,7 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 		t3.start();
 		t4.start();
 		try {
-			System.out.println(ObjetosJson.size() + "Listaconvertida");
+	//		System.out.println(ObjetosJson.size() + "Listaconvertida");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -217,7 +217,7 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 	}
 	public synchronized void setRegistrosWriter() {
 		this.RegistrosEscritos++;
-		System.out.println("-----" + this.RegistrosEscritos);
+	//	System.out.println("-----" + this.RegistrosEscritos);
 
 	}
 }

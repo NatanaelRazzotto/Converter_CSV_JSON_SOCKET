@@ -10,50 +10,205 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import com.razzotto.Entidade.Arquivo;
+import com.razzotto.Entidade.ProgressoArquivo;
 
-public class AplicacaoCliente {
+import InterfaceUICliente.ControllerInterfaceClient;
+
+public class AplicacaoCliente extends Thread{
+	private ControllerInterfaceClient controllerClient;
 	private String endereco;
-	private Socket cliente;
-    private ObjectOutputStream saida;
+//	private Socket cliente;
+	private Socket conexao;
+	//Arquivo arquivo;
+  //  private ObjectOutputStream saida;
+  //  private ObjectInputStream scannerServer;
+    File dirOriginario;
+    File dirDestinado;
+    Integer porta;
+    
 	//private PrintStream saida;
-	String mensagem;
-	public AplicacaoCliente(Integer porta) {
+	Boolean mensagem;
+	Boolean NovoProcesso;
+	public AplicacaoCliente(ControllerInterfaceClient controller,Integer pota, File dirArquivoOriginario, File dirDestinadoSalvamento) {
 		try {
 			endereco = InetAddress.getByName("localhost").getHostAddress();
-			try {
-				cliente = new Socket(endereco,porta);
-				saida= new ObjectOutputStream (cliente.getOutputStream());
+//			try {
+				System.out.println("tesndao");
+	   			System.out.println(dirOriginario);
+				System.out.println(dirDestinado);
+				controllerClient = controller;
+		
+				porta =pota;
+				Socket Conexao = new Socket(endereco,porta);
+				Thread t = new AplicacaoCliente(Conexao,dirArquivoOriginario,dirDestinadoSalvamento,controller);
+				t.start();
+			//	saida= new ObjectOutputStream (cliente.getOutputStream());
+			//	scannerServer = new ObjectInputStream(cliente.getInputStream());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void conectorClienteServer (File dirArquivoOriginario, File dirDestinadoSalvamento) throws IOException
-	{
-//		Arquivo arquivo = new Arquivo(dirArquivoOriginario, dirDestinadoSalvamento);
-//		try {
-//			saida.writeObject(arquivo);
-//			cliente.close();
-//			System.out.println("Conex„o encerrada!!!!");
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
+//		} catch (UnknownHostException e) {
 //			e.printStackTrace();
 //		}
-		mensagem = "caminho";
-		while (!cliente.isClosed()) {
-			//System.out.print("Digite sua mensagem (ou digite \"sair\"): ");
-			Arquivo arquivo = new Arquivo(dirArquivoOriginario,dirDestinadoSalvamento,mensagem);
-			System.out.print("Objeto arquivo ");
-			saida.writeObject(arquivo);
+	}
+	public AplicacaoCliente(Socket s, File dirArquivoOriginario, File dirDestinadoSalvamento,ControllerInterfaceClient controller){//recebe o valor do socket enviado na thread
+		conexao = s;
+		dirOriginario = dirArquivoOriginario;
+		dirDestinado = dirDestinadoSalvamento;
+		controllerClient = controller;
+	}
 
-			if (mensagem.equals("sair") || !cliente.isConnected())
-				cliente.close();
-			mensagem = "sair";
+//	public void conectorClienteServer (File dirArquivoOriginario, File dirDestinadoSalvamento) throws IOException, ClassNotFoundException
+//	{
+////		Arquivo arquivo = new Arquivo(dirArquivoOriginario, dirDestinadoSalvamento);
+////		try {
+////			saida.writeObject(arquivo);
+////			cliente.close();
+////			System.out.println("Conex„o encerrada!!!!");
+////		} catch (IOException e) {
+////			// TODO Auto-generated catch block
+////			e.printStackTrace();
+////		}
+//		mensagem = true;
+//		NovoProcesso = true;
+//		while (!cliente.isClosed()) {
+//			//System.out.print("Digite sua mensagem (ou digite \"sair\"): ");
+//			Arquivo arquivo = new Arquivo(dirArquivoOriginario,dirDestinadoSalvamento,mensagem,NovoProcesso);
+//			System.out.print("Objeto arquivo ");
+//			saida.writeObject(arquivo);
+//
+//			if (mensagem == false || !cliente.isConnected())
+//				cliente.close();
+//			else 
+//			{
+//				Arquivo arquivorecebido = (Arquivo) scannerServer.readObject();
+//				mensagem = arquivorecebido.getTerminouEscrita();
+//				controllerClient.agregarProcessamento(arquivorecebido);
+//				System.out.println("teste");
+//			}
+//			NovoProcesso = false;
+//		
+//		}
+//		System.out.println("Conex√£o encerrada!!!!");
+//
+//	}
+
+	public void run() {
+		try {
+		//	PrintStream saida = new PrintStream(conexao.getOutputStream());
+			ObjectOutputStream saida= new ObjectOutputStream (conexao.getOutputStream());
+			ObjectInputStream scannerServer = new ObjectInputStream(conexao.getInputStream());
+			saida.flush();
+			Boolean mensagem = true;
+			Boolean mensagema = true;
+			System.out.print("teste ");
+			System.out.println("COME«OU");
+	//		saida.writeObject("teste");
+			try {
+				while (true)
+				{
+					saida.flush();
+					Arquivo arquivo = new Arquivo(dirOriginario,dirDestinado,mensagem,mensagema);
+					System.out.println("dfdsfdsfsdfsdf" + dirOriginario);
+					saida.writeObject(arquivo);
+					System.out.println( arquivo.getStartNovoProcesso());
+			
+		
+			
+						Arquivo arquivorecebido = (Arquivo) scannerServer.readObject();
+					    if (arquivorecebido.getManterConectado()==true)
+					    {
+					    	if (arquivorecebido.getStartNovoProcesso()==false)
+						    {
+					    		mensagema = false;
+					    		System.out.println("deu false" + arquivorecebido.getStartNovoProcesso());
+						    }
+					    	else
+					    	{
+					    		System.out.println("deu true" + arquivorecebido.getStartNovoProcesso());
+					    	}
+					    controllerClient.agregarProcessamento(arquivorecebido);
+						System.out.println(arquivorecebido);
+						System.out.println(arquivorecebido.getProgressLeitura());
+					    }
+					    else
+					    {
+					    	break;
+					    }
+						
+
+				}
+	
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			saida.flush();
+			saida.close();
+			conexao.close();
+			
+//			while (!conexao.isClosed()) {
+//				System.out.print("teste ");
+//				Arquivo arquivo = new Arquivo(dirOriginario,dirDestinado,mensagem,true);
+//				System.out.print("Objeto arquivo ");
+//				saida.writeObject("teste");
+//			//	saida.println(mensagem);
+//
+//				if (mensagem.equals("sair") || !conexao.isConnected())
+//					conexao.close();
+//				 mensagem = false;
+//			}
+			System.out.println("Conex√£o encerrada!!!!");
+		
+		
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		System.out.println("Conex√£o encerrada!!!!");
 
+		
+//		try {
+//	//		endereco = InetAddress.getByName("localhost").getHostAddress();
+//	//		Socket cliente = new Socket(endereco,porta);
+//			ObjectOutputStream saida= new ObjectOutputStream (conexao.getOutputStream());
+//			ObjectInputStream scannerServer = new ObjectInputStream(conexao.getInputStream());
+//			do {
+//
+//				
+//				Arquivo arquivo = new Arquivo(dirOriginario,dirDestinado,mensagem,NovoProcesso);
+//				System.out.print("Objeto arquivo ");
+//				saida.writeObject(arquivo);
+//				if (mensagem == false || !conexao.isConnected())
+//					conexao.close();
+//				else 
+//				{
+//					//if (scannerServer.readObject() != null)
+//					//{
+//				
+//					Arquivo arquivorecebido;
+//					try {
+//						arquivorecebido = (Arquivo) scannerServer.readObject();
+//						mensagem = arquivorecebido.getTerminouEscrita();
+//						controllerClient.agregarProcessamento(arquivorecebido);
+//						System.out.println("teste");
+//					} catch (ClassNotFoundException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//	
+//					//}
+//				}
+//				NovoProcesso = false;
+//			
+//				
+//			} while (!conexao.isClosed());{
+//				System.out.println("Conex√£o encerrada!!!!");
+//			}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+		
 	}
 }

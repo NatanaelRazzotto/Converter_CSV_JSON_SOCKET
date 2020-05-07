@@ -44,7 +44,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 
-public class InicialController implements javafx.fxml.Initializable{
+public class InterfaceMain implements javafx.fxml.Initializable{
     @FXML
     private Button btn_AbrirArquivo;
     @FXML
@@ -138,8 +138,7 @@ public class InicialController implements javafx.fxml.Initializable{
 	    		txtA_Status.appendText("----------BEM VINDO-----------" + "\n");
 	   			System.out.println(dirOriginario);
 				System.out.println(dirDestinado);
-				AplicacaoCliente cliente = new AplicacaoCliente(12345);
-				cliente.conectorClienteServer(dirOriginario,dirDestinado);
+				new ControllerInterfaceClient(this, PrB_ProgressoLeitura, PrB_ProecessoConversao, PrB_ProecessoEscrita, txtA_Status, dirOriginario, dirDestinado);
 				//controller = new Controller(dirOriginario,dirDestinado);
 				//controller.Inicia();
 //				btn_ConverteArquivo.setDisable(true);
