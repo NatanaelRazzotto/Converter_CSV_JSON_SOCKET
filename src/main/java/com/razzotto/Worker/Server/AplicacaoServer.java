@@ -70,7 +70,9 @@ public class AplicacaoServer extends Thread{
 					    {
 			    	    	System.out.println("true----------");
 			       			controller = new Controller(arquivo.getDiretorioOriginario(),arquivo.getDiretorioDestinado());
-			       			controller.Inicia();
+			    			Thread tp = new Thread(controller);
+			    			tp.start();
+			       		//	controller.Inicia();
 			       			System.out.println(arquivo.getDiretorioOriginario());
 			       			System.out.println("destino " +arquivo.getDiretorioDestinado());
 						

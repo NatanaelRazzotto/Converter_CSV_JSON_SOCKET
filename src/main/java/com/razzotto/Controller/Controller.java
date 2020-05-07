@@ -22,7 +22,7 @@ import com.sun.javafx.webkit.ThemeClientImpl;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 
-public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter {
+public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter, Runnable{
 	private List<CSVRecord> filaCSV = null;
 	public Vector<String> ObjetosJson = null;
 	public Map<Integer, String> ContabilidadeTempo = null;
@@ -42,6 +42,10 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 	private Instant FimLeituraFileJson;
 	private Instant FimLeituraFileWriter;
 	private boolean controle;
+	
+	EscritorJSON escritor;
+	TratamentoCSV trataCSV;
+	
 	/////////////////////////////////////////// CONTROLLER/////////////////////////////////////////
 	public File getDirOriginario() {
 		return dirOriginario;
@@ -62,11 +66,53 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 		ObjetosJson = new Vector<String>();
 		ContabilidadeTempo = new HashMap<Integer, String>();
 	}
+	@Override
+	public void run() {
+		try {
+			
+		
+		this.TratamentodeCSV();
+		this.converterJSON();
+		this.EscritordeJSON();
+		while (this.IsContinuaEscrita()==true) {
+			if (this.filaCSV.size() > 0)
+			{
+				new Thread(new ConversorJSON(this)).start();
+				System.out.println("----Startou Thread--------------");
+			}
+			if (this.ObjetosJson.size() > 100)
+			{
+				new Thread(escritor).start();
+			}
+		}
+		escritor.EncerrarArquivo();
+	//	new TratamentoTempo().GerarLogsdeTempo(this);;
+		System.out.println("Terminou com sucesso");
+		}
+		catch (Exception e) {
+			System.out.println("Erro No gestor");
+		}
+		
+	}
 	public void Inicia() {
 		this.TratamentodeCSV();
 		this.converterJSON();
 		this.EscritordeJSON();
 		System.out.println("Terminou com sucesso");
+		while (emOperacaoJson()) {
+			if (this.filaCSV.size() > 90)
+			{
+				new Thread(new ConversorJSON(this)).start();
+				System.out.println("----Startou Thread--------------");
+			}
+			if (this.ObjetosJson.size() > 90)
+			{
+				new Thread(escritor).start();
+				System.out.println("----Escrita--------------");
+			}
+			
+
+		}
 
 	}
 	public synchronized void ObterTempo(int chave,Instant Inicio, Instant Fim) {
@@ -75,7 +121,7 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 	
 	/////////////////////////////////////////// CSV/////////////////////////////////////////
 	private void TratamentodeCSV() {
-		TratamentoCSV trataCSV = new TratamentoCSV(this, dirOriginario);// 
+		trataCSV = new TratamentoCSV(this, dirOriginario);// 
 																		
 		quantidadeRegistros = trataCSV.getQtdeRegistros(dirOriginario);
 		Thread tCSV = new Thread(trataCSV);
@@ -119,13 +165,13 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 	private void converterJSON() {
 		SetTempoInicialJson();
 		Thread t1 = new Thread(new ConversorJSON(this));
-		Thread t2 = new Thread(new ConversorJSON(this));
-		Thread t3 = new Thread(new ConversorJSON(this));
-		Thread t4 = new Thread(new ConversorJSON(this));
+	//	Thread t2 = new Thread(new ConversorJSON(this));
+	//	Thread t3 = new Thread(new ConversorJSON(this));
+	//	Thread t4 = new Thread(new ConversorJSON(this));
 		t1.start();
-		t2.start();
-		t3.start();
-		t4.start();
+	//	t2.start();
+	//	t3.start();
+	//	t4.start();
 		try {
 	//		System.out.println(ObjetosJson.size() + "Listaconvertida");
 
@@ -179,10 +225,12 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 	}
 	//////////////////////////////////////////WRITER/////////////////////////////////////////
 	private void EscritordeJSON() {
-		EscritorJSON escritor = new EscritorJSON(dirDestinado, this);// será decomentado
+		escritor = new EscritorJSON(dirDestinado, this);// será decomentado
 		Thread tEcritor = new Thread(escritor);
 		tEcritor.setName("Thread_tEcritor");
 		tEcritor.start();
+		SetTempoIniciaWriter();
+
 	}
 	@Override
 	public synchronized void SetTempoIniciaWriter() {
@@ -196,6 +244,12 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 	{
 		return filaCSV.size() > 0 || ObjetosJson.size() > 0;// true
 	}
+	
+	public synchronized String obterJson() {
+		if (ObjetosJson.size() > 0)
+			return ObjetosJson.remove(0);
+		return null;
+	}
 	@Override
 	public synchronized void setContinuaEscrita(boolean terminou) {
 		if ((this.ContinuaEscrita == true)&&(terminou == false))
@@ -204,6 +258,10 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 			ObterTempo(3,this.inicioLeituraFileWRITER,this.FimLeituraFileWriter);
 			new TratamentoTempo().GerarLogsdeTempo(this);
 		}
+//		else 
+//		{
+//			escritor.EncerrarArquivo();
+//		}
 		ContinuaEscrita = terminou;
 
 	}
@@ -220,4 +278,5 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter 
 	//	System.out.println("-----" + this.RegistrosEscritos);
 
 	}
+
 }

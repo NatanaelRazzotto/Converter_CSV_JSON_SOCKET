@@ -87,7 +87,7 @@ public class InterfaceMain implements javafx.fxml.Initializable{
  		//btn_ConverteArquivo.setDisable(true);
  		 		
  	}
-     @FXML////////////////////////////////////////////////////////////
+     @FXML////////////////////////////////////////////////////////////!!!!!!!!
      private void AbrirTempo(ActionEvent event) {
      	try {
      		LerTempos();
@@ -343,6 +343,11 @@ public class InterfaceMain implements javafx.fxml.Initializable{
 					somTParse = somTParse+ temporizacao.getTempodeConversao();
 					somEscrita = somEscrita+ temporizacao.getTempodeEscrita();
 				}
+				Temporizacao ultimatomada = ListadeTempos.get(ListadeTempos.size()-1);
+				txtA_Status.appendText("//////O ultimo processamento teve como resultado!\\\\\\  \n");
+				txtA_Status.appendText("* TEMPO MÉDIO DE LEITURA: " +ultimatomada.getTempodeLeitura() + "Milesegundos \n");
+				txtA_Status.appendText("* TEMPO MÉDIO DE PARSE: " + ultimatomada.getTempodeConversao() + "Milesegundos \n");
+				txtA_Status.appendText("* TEMPO MÉDIO DE ESCRITA: " + ultimatomada.getTempodeEscrita() + "Milesegundos \n");
 				medTLeitura = (somTLeitura / ListadeTempos.size());
 				medTParse = (somTParse / ListadeTempos.size());
 				medEscrita = (somEscrita / ListadeTempos.size());

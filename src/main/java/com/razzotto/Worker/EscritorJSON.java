@@ -15,6 +15,7 @@ import com.razzotto.Controller.Controller;
 
 public class EscritorJSON implements Runnable{
 	private File file;
+	FileWriter writer;
 	private Controller controller;
 	public void salvar(String DiretorioDestino, List<String>FilaJson) {
 		Path path = Paths.get("C:\\Users\\Casa\\Documents\\TESTES PROGRAMAS CSV\\i3");
@@ -30,16 +31,30 @@ public class EscritorJSON implements Runnable{
 		}
 	}
 	public EscritorJSON(File filedestino, Controller controladora) {
-		this.file = filedestino;
-		this.controller = controladora;
+		try {
+			this.file = filedestino;
+			this.controller = controladora;
+			writer = new FileWriter(this.file, false);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void EncerrarArquivo() {
+		try {
+			writer.close();
+		} catch (IOException e) {
+			System.out.println("Não encerrou arquivo");
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void run() {
 		try {
 //			System.out.println(controller.ObjetosJson.get(0) +"restante");
-			controller.SetTempoIniciaWriter();
-			FileWriter writer = new FileWriter(file, false);
+			
+
 	//		System.out.println(controller.ObjetosJson.get(1) +"restante");
 			do {		
 				if(controller.ObjetosJson.size()==0)
@@ -55,18 +70,21 @@ public class EscritorJSON implements Runnable{
 				}
 				else 
 				{
-				//	System.out.println(controller.ObjetosJson.get(0) +"restante");
-					String pessoaAtualGson = controller.ObjetosJson.get(0);
-					controller.ObjetosJson.remove(0);
+					//	System.out.println(controller.ObjetosJson.get(0) +"restante");
+					String pessoaAtualGson = controller.obterJson();
+				//controller.ObjetosJson.remove(0);
+					if (pessoaAtualGson!=null)
+					{
 					controller.setRegistrosWriter();
 					writer.write(pessoaAtualGson +"\n");
+					}
 				}
 			}
 			while(controller.emOperacaoJson()); {
-				writer.write("Terminou");
+			//	writer.write("Terminou");
 				controller.setContinuaEscrita(false);
 				System.out.println(controller.ObjetosJson.size() +"restante");
-				writer.close();
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
