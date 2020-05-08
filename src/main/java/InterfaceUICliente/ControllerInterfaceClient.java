@@ -26,12 +26,48 @@ public class ControllerInterfaceClient  {
 	ProgressBar ProgressConversao;
 	ProgressBar ProgressEscrita;
 	TextArea TextArea;
-	int tamanhodoArquivo;
-	private Boolean terminouLeitura;
-	private Boolean terminouConversao;
-	private Boolean terminouEscrita;
+	int tamanhodoArquivo = 0;
+	private boolean iniciouLeitura;
+	private boolean terminouLeitura;
+	private boolean iniciouConversao;
+	private boolean terminouConversao;
+	private boolean iniciouEscrito;
+	private boolean terminouEscrita;
+	private boolean terminouProcesso;
 	private String endereco;
 	
+	
+	
+	public synchronized int getProcessoLeitura() {
+		return ProcessoLeitura;
+	}
+	public synchronized void setProcessoLeitura(int processoLeitura) {
+		ProcessoLeitura = processoLeitura;
+	}
+	public synchronized int getProcessoConversao() {
+		return ProcessoConversao;
+	}
+	public synchronized void setProcessoConversao(int processoConversao) {
+		ProcessoConversao = processoConversao;
+	}
+	public synchronized int getProcessoEscrita() {
+		return ProcessoEscrita;
+	}
+	public synchronized void setProcessoEscrita(int processoEscrita) {
+		ProcessoEscrita = processoEscrita;
+	}
+	public synchronized int getProcessoFilaCSV() {
+		return ProcessoFilaCSV;
+	}
+	public synchronized void setProcessoFilaCSV(int processoFilaCSV) {
+		ProcessoFilaCSV = processoFilaCSV;
+	}
+	public synchronized int getProcessoFilaJson() {
+		return ProcessoFilaJson;
+	}
+	public synchronized void setProcessoFilaJson(int processoFilaJson) {
+		ProcessoFilaJson = processoFilaJson;
+	}
 	public ControllerInterfaceClient (InterfaceMain main, ProgressBar progressLeitura, ProgressBar progressConversão, 
 									ProgressBar progressEscrita, TextArea textarea, File dirOriginario, File dirDestinado) throws ClassNotFoundException, IOException {
 		 interfaceMain = main;
@@ -46,8 +82,15 @@ public class ControllerInterfaceClient  {
 		 try {
 			endereco = InetAddress.getByName("localhost").getHostAddress();
 			Socket Conexao = new Socket(endereco,12345);
+			int TotalRegistros;
 			Thread t = new AplicacaoCliente(Conexao,dirOriginario,dirDestinado,this);
 			t.start();
+			do {
+				TotalRegistros = tamanhodoArquivo;
+				if (tamanhodoArquivo != 0)
+					break;
+				System.out.println("total" + tamanhodoArquivo);
+			} while (TotalRegistros == 0);
 			this.atualizaCSV();
 		 } catch (UnknownHostException e) {
 				System.out.println("Problema na obtenção de endereço IP");
@@ -57,19 +100,26 @@ public class ControllerInterfaceClient  {
 	}
 	public void agregarProcessamento (Arquivo arquivo)
 	{
-		ProcessoLeitura = arquivo.getProgressLeitura();
-		System.out.println("agragação" +  arquivo.getProgressLeitura());
-		ProcessoConversao = arquivo.getProgressConversao();
-		System.out.println("agragação" +  arquivo.getProgressConversao());
-		ProcessoEscrita = arquivo.getProgressEscrita();
-		System.out.println("agragação" + arquivo.getProgressEscrita());
+		setProcessoLeitura(arquivo.getProgressLeitura());
+	//	ProcessoLeitura = arquivo.getProgressLeitura();
+	//	System.out.println("agragaçãoL" +  arquivo.getProgressLeitura());
+		setProcessoConversao(arquivo.getProgressConversao());
+		//ProcessoConversao = arquivo.getProgressConversao();
+	//	System.out.println("agragaçãoC" +  arquivo.getProgressConversao());
+		setProcessoEscrita(arquivo.getProgressEscrita());
+	//	ProcessoEscrita = arquivo.getProgressEscrita();
+	//	System.out.println("agragaçãoE" + arquivo.getProgressEscrita());
 		
 	//	ProcessoFilaCSV = arquivo.getProgressFilaCSV();
 	//	ProcessoFilaJson = arquivo.getProgressFilaJson();
 		tamanhodoArquivo = arquivo.getTamanhodoArquivo();
+		iniciouLeitura = arquivo.getIniciouLeitura();
 		terminouLeitura = arquivo.getTerminouEscrita();
-		terminouConversao = arquivo.getTerminouConversao();
+		iniciouConversao = arquivo.getIniciouConversao();
+		terminouConversao = arquivo.getTerminouConversao(); 
+		iniciouEscrito = arquivo.getIniciouEscrita();
 		terminouEscrita = arquivo.getTerminouEscrita();
+		terminouProcesso = arquivo.getManterConectado();
 	}
 	 private void atualizaCSV() {
 	    	Task taskCSV = new Task<Void>() {
@@ -78,10 +128,15 @@ public class ControllerInterfaceClient  {
 	    		protected Void call() {
 	    			int lidos = 0;
 	    			do {
-	    				//lidos = controller.getQtdRegistros();
-	    				updateProgress(ProcessoLeitura, tamanhodoArquivo);
-					} while (!terminouLeitura);
-	    			updateMessage("Foi Concluida a Leitura de " + tamanhodoArquivo + " Registros do arquivo CSV");
+	    				lidos = getProcessoLeitura();
+						updateProgress(getProcessoLeitura(), tamanhodoArquivo);
+						System.out.println("teste testado testou " + ProcessoConversao);
+					} while (terminouProcesso);
+	    			updateProgress(getProcessoLeitura(), tamanhodoArquivo);
+	    			if (terminouLeitura == false)
+	    			{
+	    			updateMessage("Foi TERMINADA a Leitura de " + lidos + " Registros do arquivo CSV");
+	    			}
 	    			return null;
 	    			
 	    		}
@@ -92,11 +147,15 @@ public class ControllerInterfaceClient  {
 	    		protected Void call() {
 	    			int lidos = 0;
 	    			do {
-	    			//	lidos = controller.getQtdRegistros();
-						updateProgress(ProcessoConversao, tamanhodoArquivo);
+	    				lidos = getProcessoConversao();
+						updateProgress(getProcessoConversao(), tamanhodoArquivo);
 						System.out.println("teste testado testou " + ProcessoConversao);
-					} while (!terminouEscrita);
-	    			updateMessage("Foi Concluida a Conversão de " + tamanhodoArquivo + " Registros de CSV para JSON");
+					} while (terminouProcesso);
+	    			if (terminouConversao == false)
+	    			{
+		    			updateMessage("Foi TERMINADA a Conversão de " + lidos + " Registros de CSV para JSON");
+	    			}
+
 	    			return null;
 	    			
 	    		}
@@ -105,11 +164,17 @@ public class ControllerInterfaceClient  {
 	    		
 	    		@Override
 	    		protected Void call() {
+	    			int lidos = 0;
 	    			do {
-	    			//	lidos = controller.getQtdRegistros();
-						updateProgress(ProcessoEscrita, tamanhodoArquivo);
-					} while (!terminouEscrita);
-	    			updateMessage("Foi Concluida a Conversão de " + tamanhodoArquivo + " Registros de CSV para JSON");
+	    				lidos = getProcessoEscrita();
+						updateProgress(getProcessoEscrita(), tamanhodoArquivo);
+					} while (terminouProcesso);
+	    			
+	    			if (terminouEscrita == false)
+	    			{
+	    				updateMessage("Foi TERMINADA a Conversão de " + lidos + " Escrita JSON");
+	    			}
+
 	    			return null;
 	    			
 	    		}

@@ -50,9 +50,8 @@ public class AplicacaoServer extends Thread{
 		try {
 			scanner = new ObjectInputStream(conexao.getInputStream());
 			outToClient = new ObjectOutputStream(conexao.getOutputStream());
-			//scanner = new Scanner(conexao.getInputStream());
 			System.out.println("COMEÇOU");
-
+			int i = 0;
 		while (!conexao.isClosed()) {
 			try {
 				//Arquivo arquivo = new Arquivo();
@@ -60,48 +59,36 @@ public class AplicacaoServer extends Thread{
 			  
 			    if (arquivo.getManterConectado()==true)
 			    {
-				arquivo  = (Arquivo) scanner.readObject();
-				System.out.println(arquivo);
-				System.out.println(arquivo.getDiretorioOriginario());
-				System.out.println("status   " + arquivo.getStartNovoProcesso());
+					arquivo  = (Arquivo) scanner.readObject();
+					System.out.println(arquivo);
+					System.out.println(arquivo.getDiretorioOriginario());
+					System.out.println("status   " + arquivo.getStartNovoProcesso());
 
 			 
 			    	 if (arquivo.getStartNovoProcesso()==true)
 					    {
-			    	    	System.out.println("true----------");
+			    		 if (i == 0)
+			    		 {
+			    	    	System.out.println("---Começando novo Processamento------");
 			       			controller = new Controller(arquivo.getDiretorioOriginario(),arquivo.getDiretorioDestinado());
 			    			Thread tp = new Thread(controller);
 			    			tp.start();
-			       		//	controller.Inicia();
-			       			System.out.println(arquivo.getDiretorioOriginario());
-			       			System.out.println("destino " +arquivo.getDiretorioDestinado());
-						
-						    arquivo.setStartNovoProcesso(false);
+			    			i++;
+			    		 }
 						    controleNovo = false;
-						    System.out.println( arquivo.getStartNovoProcesso());
-						    
-							int TotalRegistros =0;
-							do {
-								TotalRegistros = controller.getQtdRegistros();
-								if (!controller.IsContinuaLeituraCSV())
-									break;
-								
-							} while (TotalRegistros == 0);
 						    arquivo = obteratualizacoes(arquivo,controleNovo,true);
 							outToClient.writeObject(arquivo);
 					    }
 			    	 else
 			    	 {
 			    		 System.out.println("Processando----------");
-						    arquivo = obteratualizacoes(arquivo,controleNovo,true);
-							outToClient.writeObject(arquivo);
+						 arquivo = obteratualizacoes(arquivo,controleNovo,true);
+					     outToClient.writeObject(arquivo);
 			    	 }
-			
-			    	
+
 			    }
 			    else
 			    {
-			    	
 			    	System.out.println("Encerrando Conexao");
 			    	conexao.close();
 			    	break;
@@ -158,14 +145,32 @@ public class AplicacaoServer extends Thread{
 	}
 	public Arquivo obteratualizacoes(Arquivo arquivonovo, boolean controleNovo, boolean controleConexao)
 	{
+		int totalRegistros = controller.getQtdRegistros();
+		boolean definicao = true;
+		if (controller.IsContinuaProcessamento()==false)
+		{
+			if ((controller.getRegistrosLidos()<=totalRegistros-1)||(controller.getRegistrosConvertidos()<=totalRegistros-1)||(controller.getRegistrosWriter()<=totalRegistros-1))
+			{
+				definicao = true;
+			}
+			else
+			{
+				definicao = false;
+			}
+		}
 		//Arquivo arquivonovo = new Arquivo();
 
 		arquivonovo.setProgressLeitura(controller.getRegistrosLidos());
 		arquivonovo.setProgressConversao(controller.getRegistrosConvertidos());
 		arquivonovo.setProgressEscrita(controller.getRegistrosWriter());
-		arquivonovo.setTamanhodoArquivo(controller.getQtdRegistros());
+		arquivonovo.setTamanhodoArquivo(totalRegistros);
+		//arquivonovo.setManterConectado(controller.IsContinuaEscrita());
+		arquivonovo.setManterConectado(definicao);
+		//arquivonovo.setIniciouLeitura(controller.);
+		arquivonovo.setTerminouLeitura(controller.IsContinuaLeituraCSV());
+		arquivonovo.setTerminouLeitura(controller.IsContinuaLeituraJSON());
 		arquivonovo.setTerminouEscrita(controller.IsContinuaEscrita());
-		arquivonovo.setManterConectado(controller.IsContinuaEscrita());
+		
 		arquivonovo.setStartNovoProcesso(controleNovo);
 		return arquivonovo;
 		

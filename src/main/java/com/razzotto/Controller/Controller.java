@@ -35,6 +35,7 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter,
 	private int RegistrosEscritos;
 	private boolean ContinuaEscrita = true;
 	private boolean ContinuaConversaoJSON = true;
+	private boolean ContinuaProcessamento = true;
 	private Instant inicioLeituraFile;
 	private Instant FimLeituraFile;
 	private Instant inicioLeituraFileJSON;
@@ -86,6 +87,8 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter,
 			}
 		}
 		escritor.EncerrarArquivo();
+		setContinuaProcessamento();
+		
 	//	new TratamentoTempo().GerarLogsdeTempo(this);;
 		System.out.println("Terminou com sucesso");
 		}
@@ -119,6 +122,12 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter,
 		new TratamentoTempo().obterDuracao(this, Inicio, Fim, chave);
 	}
 	
+	public void setContinuaProcessamento() {
+       		this.ContinuaProcessamento = false;
+	}
+	public synchronized boolean IsContinuaProcessamento() {
+		return this.ContinuaProcessamento;
+	}
 	/////////////////////////////////////////// CSV/////////////////////////////////////////
 	private void TratamentodeCSV() {
 		trataCSV = new TratamentoCSV(this, dirOriginario);// 

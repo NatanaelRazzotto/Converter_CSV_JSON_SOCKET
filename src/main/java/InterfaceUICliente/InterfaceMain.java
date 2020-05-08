@@ -165,88 +165,88 @@ public class InterfaceMain implements javafx.fxml.Initializable{
 		}
 
     }
-    private void atualizaCSV() {
-    	Task taskCSV = new Task<Void>() {
-    		
-    		@Override
-    		protected Void call() {
-    			int lidos = 0;
-    			do {
-    				lidos = controller.getQtdRegistros();
-    				updateProgress(controller.getRegistrosLidos(), TotalRegistros);
-				} while (controller.IsContinuaLeituraCSV());
-    			updateMessage("Foi Concluida a Leitura de " + lidos + " Registros do arquivo CSV");
-    			return null;
-    			
-    		}
-    	};
-    	Task taskJon = new Task<Void>() {
-    		
-    		@Override
-    		protected Void call() {
-    			int lidos = 0;
-    			do {
-    				lidos = controller.getQtdRegistros();
-					updateProgress(controller.getRegistrosConvertidos(), TotalRegistros);
-				} while (controller.IsContinuaLeituraJSON());
-    			updateMessage("Foi Concluida a Conversão de " + lidos + " Registros de CSV para JSON");
-    			return null;
-    			
-    		}
-    	};
-    	Task taskEscritor = new Task<Void>() {
-    		
-    		@Override
-    		protected Void call() {
-    			int lidos = 0;
-    			do {
-    				lidos = controller.getQtdRegistros();
-					updateProgress(controller.getRegistrosWriter(), TotalRegistros);
-				} while (controller.IsContinuaEscrita());
-    	
-    			updateMessage("Foi Concluida a Escrita de " + lidos + " Registros em JSON");
-    			return null;
-    			
-    		}
-    	};
-		taskCSV.messageProperty().addListener(new ChangeListener<String>() {
-
-			@Override
-			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
-				txtA_Status.appendText("\n"+taskCSV.getMessage());
-
-			}
-			
-		});
-		taskJon.messageProperty().addListener(new ChangeListener<String>() {
-
-			@Override
-			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
-				txtA_Status.appendText("\n"+taskJon.getMessage());
-
-			}
-			
-		});
-		taskEscritor.messageProperty().addListener(new ChangeListener<String>() {
-
-			@Override
-			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
-				txtA_Status.appendText("\n"+taskEscritor.getMessage());
-
-			}
-			
-		});
-			PrB_ProgressoLeitura.progressProperty().bind(taskCSV.progressProperty());
-			new Thread(taskCSV).start();
-
-			PrB_ProecessoConversao.progressProperty().bind(taskJon.progressProperty());
-			new Thread(taskJon).start();
-			
-			PrB_ProecessoEscrita.progressProperty().bind(taskEscritor.progressProperty());
-			new Thread(taskEscritor).start();
-		
-		
-	}
+//    private void atualizaCSV() {
+//    	Task taskCSV = new Task<Void>() {
+//    		
+//    		@Override
+//    		protected Void call() {
+//    			int lidos = 0;
+//    			do {
+//    				lidos = controller.getQtdRegistros();
+//    				updateProgress(controller.getRegistrosLidos(), TotalRegistros);
+//				} while (controller.IsContinuaLeituraCSV());
+//    			updateMessage("Foi Concluida a Leitura de " + lidos + " Registros do arquivo CSV");
+//    			return null;
+//    			
+//    		}
+//    	};
+//    	Task taskJon = new Task<Void>() {
+//    		
+//    		@Override
+//    		protected Void call() {
+//    			int lidos = 0;
+//    			do {
+//    				lidos = controller.getQtdRegistros();
+//					updateProgress(controller.getRegistrosConvertidos(), TotalRegistros);
+//				} while (controller.IsContinuaLeituraJSON());
+//    			updateMessage("Foi Concluida a Conversão de " + lidos + " Registros de CSV para JSON");
+//    			return null;
+//    			
+//    		}
+//    	};
+//    	Task taskEscritor = new Task<Void>() {
+//    		
+//    		@Override
+//    		protected Void call() {
+//    			int lidos = 0;
+//    			do {
+//    				lidos = controller.getQtdRegistros();
+//					updateProgress(controller.getRegistrosWriter(), TotalRegistros);
+//				} while (controller.IsContinuaEscrita());
+//    	
+//    			updateMessage("Foi Concluida a Escrita de " + lidos + " Registros em JSON");
+//    			return null;
+//    			
+//    		}
+//    	};
+//		taskCSV.messageProperty().addListener(new ChangeListener<String>() {
+//
+//			@Override
+//			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
+//				txtA_Status.appendText("\n"+taskCSV.getMessage());
+//
+//			}
+//			
+//		});
+//		taskJon.messageProperty().addListener(new ChangeListener<String>() {
+//
+//			@Override
+//			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
+//				txtA_Status.appendText("\n"+taskJon.getMessage());
+//
+//			}
+//			
+//		});
+//		taskEscritor.messageProperty().addListener(new ChangeListener<String>() {
+//
+//			@Override
+//			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
+//				txtA_Status.appendText("\n"+taskEscritor.getMessage());
+//
+//			}
+//			
+//		});
+//			PrB_ProgressoLeitura.progressProperty().bind(taskCSV.progressProperty());
+//			new Thread(taskCSV).start();
+//
+//			PrB_ProecessoConversao.progressProperty().bind(taskJon.progressProperty());
+//			new Thread(taskJon).start();
+//			
+//			PrB_ProecessoEscrita.progressProperty().bind(taskEscritor.progressProperty());
+//			new Thread(taskEscritor).start();
+//		
+//		
+//	}
 	public File Captura_Arquivo(){////////
     	try {
 	    JFileChooser file_chooser = new JFileChooser();
@@ -289,32 +289,32 @@ public class InterfaceMain implements javafx.fxml.Initializable{
 		}
     	
     }
-    public static void gerarVeiculos(File dir)//Metodo não usado
-	{
-    	try {
-		System.out.println("sdadsad");
-		List<String> Modelo = Arrays.asList("Onix","Palio","Fiesta","Argo","HB20");
-		List<String> alfabeto = Arrays.asList("A","B","C","D","F","G","H","I","J","K","L",
-				"M","N","O","P","Q","R","S","T","U","V","W","Y","X","Z");
-	
-			System.out.println("gfhghgh");
-		Random gerador = new Random();
-		FileWriter csvWriter = new FileWriter(dir, false);
-			for (int i = 0; i < 50000; i ++)
-			{
-				csvWriter.append(String.join(",", alfabeto.get(gerador.nextInt(24)) + alfabeto.get(gerador.nextInt(24))
-						+alfabeto.get(gerador.nextInt(24))+"-"+gerador.nextInt(10)+gerador.nextInt(10)+gerador.nextInt(10)+gerador.nextInt(10)));
-				csvWriter.append(String.join(",","," +Modelo.get(gerador.nextInt(4))));
-				csvWriter.append("\n");
-			}
-			csvWriter.flush();
-			csvWriter.close();
-			System.out.println("deu");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-     
-	}
+//    public static void gerarVeiculos(File dir)//Metodo não usado
+//	{
+//    	try {
+//		System.out.println("sdadsad");
+//		List<String> Modelo = Arrays.asList("Onix","Palio","Fiesta","Argo","HB20");
+//		List<String> alfabeto = Arrays.asList("A","B","C","D","F","G","H","I","J","K","L",
+//				"M","N","O","P","Q","R","S","T","U","V","W","Y","X","Z");
+//	
+//			System.out.println("gfhghgh");
+//		Random gerador = new Random();
+//		FileWriter csvWriter = new FileWriter(dir, false);
+//			for (int i = 0; i < 50000; i ++)
+//			{
+//				csvWriter.append(String.join(",", alfabeto.get(gerador.nextInt(24)) + alfabeto.get(gerador.nextInt(24))
+//						+alfabeto.get(gerador.nextInt(24))+"-"+gerador.nextInt(10)+gerador.nextInt(10)+gerador.nextInt(10)+gerador.nextInt(10)));
+//				csvWriter.append(String.join(",","," +Modelo.get(gerador.nextInt(4))));
+//				csvWriter.append("\n");
+//			}
+//			csvWriter.flush();
+//			csvWriter.close();
+//			System.out.println("deu");
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//     
+//	}
 	public void LerTempos ()
 	{
 		try {

@@ -7,8 +7,8 @@ public class Arquivo implements Serializable {
 	private static final long serialVersionUID = 5950169519310163575L;
 	File diretorioOriginario;
 	File diretorioDestinado;
-	Boolean ManterConectado;
-	Boolean StartNovoProcesso;
+	boolean ManterConectado;
+	boolean StartNovoProcesso;
 	int ProgressLeitura;
 	int ProgressConversao;
 	int ProgressEscrita;
@@ -17,16 +17,16 @@ public class Arquivo implements Serializable {
 	int tamanhodoArquivo;
 	///
 	String StatusProcesso;
-	Boolean iniciouLeitura;
-	Boolean TerminouLeitura= false;
-	Boolean iniciouConversao;
-	Boolean TerminouConversao= false;
-	Boolean iniciouEscrita;
-	Boolean TerminouEscrita = true;
+	boolean iniciouLeitura;
+	boolean TerminouLeitura= true;
+	boolean iniciouConversao;
+	boolean TerminouConversao= true;
+	boolean iniciouEscrita;
+	boolean TerminouEscrita = true;
 	public Arquivo() {
 		super();
 	}
-	public Arquivo(File diretorioOriginario, File diretorioDestinado, Boolean manterConectado,Boolean startNovoProcesso) {
+	public Arquivo(File diretorioOriginario, File diretorioDestinado, boolean manterConectado,boolean startNovoProcesso) {
 		super();
 		this.diretorioOriginario = diretorioOriginario;
 		this.diretorioDestinado = diretorioDestinado;
@@ -45,16 +45,16 @@ public class Arquivo implements Serializable {
 	public void setDiretorioDestinado(File diretorioDestinado) {
 		this.diretorioDestinado = diretorioDestinado;
 	}
-	public Boolean getManterConectado() {
+	public boolean getManterConectado() {
 		return ManterConectado;
 	}
-	public void setManterConectado(Boolean manterConectado) {
+	public void setManterConectado(boolean manterConectado) {
 		ManterConectado = manterConectado;
 	}
-	public Boolean getStartNovoProcesso() {
+	public boolean getStartNovoProcesso() {
 		return StartNovoProcesso;
 	}
-	public void setStartNovoProcesso(Boolean startNovoProcesso) {
+	public void setStartNovoProcesso(boolean startNovoProcesso) {
 		StartNovoProcesso = startNovoProcesso;
 	}
 	public int getProgressLeitura() {
@@ -93,40 +93,40 @@ public class Arquivo implements Serializable {
 	public void setStatusProcesso(String statusProcesso) {
 		StatusProcesso = statusProcesso;
 	}
-	public Boolean getIniciouLeitura() {
+	public boolean getIniciouLeitura() {
 		return iniciouLeitura;
 	}
-	public void setIniciouLeitura(Boolean iniciouLeitura) {
+	public void setIniciouLeitura(boolean iniciouLeitura) {
 		this.iniciouLeitura = iniciouLeitura;
 	}
-	public Boolean getTerminouLeitura() {
+	public boolean getTerminouLeitura() {
 		return TerminouLeitura;
 	}
-	public void setTerminouLeitura(Boolean terminouLeitura) {
+	public void setTerminouLeitura(boolean terminouLeitura) {
 		TerminouLeitura = terminouLeitura;
 	}
-	public Boolean getIniciouConversao() {
+	public boolean getIniciouConversao() {
 		return iniciouConversao;
 	}
-	public void setIniciouConversao(Boolean iniciouConversao) {
+	public void setIniciouConversao(boolean iniciouConversao) {
 		this.iniciouConversao = iniciouConversao;
 	}
-	public Boolean getTerminouConversao() {
+	public boolean getTerminouConversao() {
 		return TerminouConversao;
 	}
-	public void setTerminouConversao(Boolean terminouConversao) {
+	public void setTerminouConversao(boolean terminouConversao) {
 		TerminouConversao = terminouConversao;
 	}
-	public Boolean getIniciouEscrita() {
+	public boolean getIniciouEscrita() {
 		return iniciouEscrita;
 	}
-	public void setIniciouEscrita(Boolean iniciouEscrita) {
+	public void setIniciouEscrita(boolean iniciouEscrita) {
 		this.iniciouEscrita = iniciouEscrita;
 	}
-	public Boolean getTerminouEscrita() {
+	public boolean getTerminouEscrita() {
 		return TerminouEscrita;
 	}
-	public void setTerminouEscrita(Boolean terminouEscrita) {
+	public void setTerminouEscrita(boolean terminouEscrita) {
 		TerminouEscrita = terminouEscrita;
 	}
 	public static long getSerialversionuid() {

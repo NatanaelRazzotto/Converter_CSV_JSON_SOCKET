@@ -60,120 +60,53 @@ public class AplicacaoCliente extends Thread{
 
 	public void run() {
 		try {
-		//	PrintStream saida = new PrintStream(conexao.getOutputStream());
 			ObjectOutputStream saida= new ObjectOutputStream (conexao.getOutputStream());
 			ObjectInputStream scannerServer = new ObjectInputStream(conexao.getInputStream());
 			saida.flush();
-			Boolean mensagem = true;
-			Boolean mensagema = true;
-			System.out.print("teste ");
-			System.out.println("COME«OU");
-	//		saida.writeObject("teste");
+			Boolean defMantemConected = true;
+			Boolean defNovoProcesso = true;
+			System.out.print("---------Inicio ComunicaÁ„o------ ");
+
 			try {
 				while (true)
 				{
 					saida.flush();
-					Arquivo arquivo = new Arquivo(dirOriginario,dirDestinado,mensagem,mensagema);
-					System.out.println("dfdsfdsfsdfsdf" + dirOriginario);
+					Arquivo arquivo = new Arquivo(dirOriginario,dirDestinado,defMantemConected,defNovoProcesso);
+					// Envia Dados//
 					saida.writeObject(arquivo);
-					System.out.println( arquivo.getStartNovoProcesso());
-			
-		
-			
-						Arquivo arquivorecebido = (Arquivo) scannerServer.readObject();
+					//Recebe dados//
+					Arquivo arquivorecebido = (Arquivo) scannerServer.readObject();
 					    if (arquivorecebido.getManterConectado()==true)
 					    {
 					    	if (arquivorecebido.getStartNovoProcesso()==false)
-						    {
-					    		mensagema = false;
-					    		System.out.println("deu false" + arquivorecebido.getStartNovoProcesso());
-						    }
-					    	else
-					    	{
-					    		System.out.println("deu true" + arquivorecebido.getStartNovoProcesso());
-					    	}
+					    		defNovoProcesso = false;
 					    controllerClient.agregarProcessamento(arquivorecebido);
-						System.out.println(arquivorecebido);
-						System.out.println(arquivorecebido.getProgressLeitura());
 					    }
 					    else
 					    {
+					    	controllerClient.agregarProcessamento(arquivorecebido);
+							conexao.close();
 					    	break;
 					    }
-						
-
 				}
 	
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
+				System.out.println("Erro de conex„o - Cliente desconectou inesperadamente!!!");
+				conexao.close();
 				e.printStackTrace();
 			}
 			
 			saida.flush();
 			saida.close();
 			conexao.close();
-			
-//			while (!conexao.isClosed()) {
-//				System.out.print("teste ");
-//				Arquivo arquivo = new Arquivo(dirOriginario,dirDestinado,mensagem,true);
-//				System.out.print("Objeto arquivo ");
-//				saida.writeObject("teste");
-//			//	saida.println(mensagem);
-//
-//				if (mensagem.equals("sair") || !conexao.isConnected())
-//					conexao.close();
-//				 mensagem = false;
-//			}
 			System.out.println("Conex√£o encerrada!!!!");
 		
 		
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		
-//		try {
-//	//		endereco = InetAddress.getByName("localhost").getHostAddress();
-//	//		Socket cliente = new Socket(endereco,porta);
-//			ObjectOutputStream saida= new ObjectOutputStream (conexao.getOutputStream());
-//			ObjectInputStream scannerServer = new ObjectInputStream(conexao.getInputStream());
-//			do {
-//
-//				
-//				Arquivo arquivo = new Arquivo(dirOriginario,dirDestinado,mensagem,NovoProcesso);
-//				System.out.print("Objeto arquivo ");
-//				saida.writeObject(arquivo);
-//				if (mensagem == false || !conexao.isConnected())
-//					conexao.close();
-//				else 
-//				{
-//					//if (scannerServer.readObject() != null)
-//					//{
-//				
-//					Arquivo arquivorecebido;
-//					try {
-//						arquivorecebido = (Arquivo) scannerServer.readObject();
-//						mensagem = arquivorecebido.getTerminouEscrita();
-//						controllerClient.agregarProcessamento(arquivorecebido);
-//						System.out.println("teste");
-//					} catch (ClassNotFoundException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//	
-//					//}
-//				}
-//				NovoProcesso = false;
-//			
-//				
-//			} while (!conexao.isClosed());{
-//				System.out.println("Conex√£o encerrada!!!!");
-//			}
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 		
 	}
 }
