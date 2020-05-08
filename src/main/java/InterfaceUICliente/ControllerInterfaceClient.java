@@ -25,6 +25,8 @@ public class ControllerInterfaceClient  {
 	ProgressBar ProgressLeitura;
 	ProgressBar ProgressConversao;
 	ProgressBar ProgressEscrita;
+	ProgressBar ProgressFilaCSV;
+	ProgressBar ProgressFilaJSON;
 	TextArea TextArea;
 	int tamanhodoArquivo = 0;
 	private boolean iniciouLeitura;
@@ -69,11 +71,14 @@ public class ControllerInterfaceClient  {
 		ProcessoFilaJson = processoFilaJson;
 	}
 	public ControllerInterfaceClient (InterfaceMain main, ProgressBar progressLeitura, ProgressBar progressConversão, 
-									ProgressBar progressEscrita, TextArea textarea, File dirOriginario, File dirDestinado) throws ClassNotFoundException, IOException {
+									ProgressBar progressEscrita, ProgressBar progressFILAC, ProgressBar progressFILCAJ,TextArea textarea, 
+									File dirOriginario, File dirDestinado) throws ClassNotFoundException, IOException {
 		 interfaceMain = main;
 		 ProgressLeitura = progressLeitura;
 		 ProgressConversao =progressConversão;
 		 ProgressEscrita = progressEscrita;
+		 ProgressFilaCSV = progressFILAC;
+		 ProgressFilaJSON= progressFILCAJ;
 		 TextArea = textarea;
 		 PreparaConexao(dirOriginario,dirDestinado);
 	}
@@ -82,15 +87,8 @@ public class ControllerInterfaceClient  {
 		 try {
 			endereco = InetAddress.getByName("localhost").getHostAddress();
 			Socket Conexao = new Socket(endereco,12345);
-			int TotalRegistros;
 			Thread t = new AplicacaoCliente(Conexao,dirOriginario,dirDestinado,this);
 			t.start();
-			do {
-				TotalRegistros = tamanhodoArquivo;
-				if (tamanhodoArquivo != 0)
-					break;
-				System.out.println("total" + tamanhodoArquivo);
-			} while (TotalRegistros == 0);
 			this.atualizaCSV();
 		 } catch (UnknownHostException e) {
 				System.out.println("Problema na obtenção de endereço IP");
@@ -110,6 +108,9 @@ public class ControllerInterfaceClient  {
 	//	ProcessoEscrita = arquivo.getProgressEscrita();
 	//	System.out.println("agragaçãoE" + arquivo.getProgressEscrita());
 		
+		setProcessoFilaCSV(arquivo.getProgressFilaCSV());
+		setProcessoFilaJson(arquivo.getProgressFilaJson());
+		
 	//	ProcessoFilaCSV = arquivo.getProgressFilaCSV();
 	//	ProcessoFilaJson = arquivo.getProgressFilaJson();
 		tamanhodoArquivo = arquivo.getTamanhodoArquivo();
@@ -121,6 +122,10 @@ public class ControllerInterfaceClient  {
 		terminouEscrita = arquivo.getTerminouEscrita();
 		terminouProcesso = arquivo.getManterConectado();
 	}
+	public boolean testeterminou() {
+		return terminouProcesso || getProcessoLeitura() < tamanhodoArquivo;
+	}
+
 	 private void atualizaCSV() {
 	    	Task taskCSV = new Task<Void>() {
 	    		
@@ -130,7 +135,7 @@ public class ControllerInterfaceClient  {
 	    			do {
 	    				lidos = getProcessoLeitura();
 						updateProgress(getProcessoLeitura(), tamanhodoArquivo);
-						System.out.println("teste testado testou " + ProcessoConversao);
+				//		System.out.println("teste testado testou " + ProcessoConversao);
 					} while (terminouProcesso);
 	    			updateProgress(getProcessoLeitura(), tamanhodoArquivo);
 	    			if (terminouLeitura == false)
@@ -149,12 +154,12 @@ public class ControllerInterfaceClient  {
 	    			do {
 	    				lidos = getProcessoConversao();
 						updateProgress(getProcessoConversao(), tamanhodoArquivo);
-						System.out.println("teste testado testou " + ProcessoConversao);
-					} while (terminouProcesso);
-	    			if (terminouConversao == false)
-	    			{
+					//	System.out.println("teste testado testou " + ProcessoConversao);
+					} while (lidos < tamanhodoArquivo);
+	    		//	if (terminouConversao == false)
+	    		//	{
 		    			updateMessage("Foi TERMINADA a Conversão de " + lidos + " Registros de CSV para JSON");
-	    			}
+	    		//	}
 
 	    			return null;
 	    			
@@ -179,6 +184,42 @@ public class ControllerInterfaceClient  {
 	    			
 	    		}
 	    	};
+	    	Task taskFilaCSV = new Task<Void>() {
+	    		
+	    		@Override
+	    		protected Void call() {
+	    			int lidos = 0;
+	    			do {
+	    				lidos = getProcessoFilaCSV();
+						updateProgress(getProcessoFilaCSV(), 100);
+						System.out.println("Quantidade em Fila CSV " + lidos);
+					} while (terminouProcesso);
+	    		    		
+	    			updateMessage("Foi TERMINADA a fila de " + lidos + " CSV");
+	    		
+	    			return null;
+	    			
+	    		}
+	    	};
+	    	Task taskFilaJson = new Task<Void>() {
+	    		
+	    		@Override
+	    		protected Void call() {
+	    			int lidos = 0;
+	    			do {
+	    				lidos = getProcessoFilaJson();
+						updateProgress(getProcessoFilaJson(), 100);
+						System.out.println("Quantidade em Fila JSON " + lidos);
+					} while (terminouProcesso);
+	    		    		
+	    			updateMessage("Foi TERMINADA a fila de " + lidos + " JSON");
+	    		
+	    			return null;
+	    			
+	    		}
+	    	};
+	    	
+	    	
 			taskCSV.messageProperty().addListener(new ChangeListener<String>() {
 
 				@Override
@@ -206,6 +247,20 @@ public class ControllerInterfaceClient  {
 				}
 				
 			});
+			int TotalRegistros;
+			do {
+				TotalRegistros = tamanhodoArquivo;
+				if (tamanhodoArquivo != 0)
+					break;
+				System.out.println("total" + tamanhodoArquivo);
+			} while (TotalRegistros == 0);
+				
+				ProgressFilaCSV.progressProperty().bind(taskFilaCSV.progressProperty());
+				new Thread(taskFilaCSV).start();
+				
+				ProgressFilaJSON.progressProperty().bind(taskFilaJson.progressProperty());
+				new Thread(taskFilaJson).start();
+			
 				ProgressLeitura.progressProperty().bind(taskCSV.progressProperty());
 				new Thread(taskCSV).start();
 

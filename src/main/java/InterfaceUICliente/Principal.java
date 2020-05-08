@@ -15,7 +15,7 @@ public class Principal extends Application{
 	public void start(Stage primaryStage) {
 		try {
 			Pane root = FXMLLoader.load(getClass().getResource("TelaPrincipal.fxml"));
-			Scene scene = new Scene (root,553,274);
+			Scene scene = new Scene (root,553,351);
 			//Controller controller = new Control
 			primaryStage.setScene(scene);
 			primaryStage.show();

@@ -61,6 +61,11 @@ public class InterfaceMain implements javafx.fxml.Initializable{
     private ProgressBar PrB_ProecessoConversao;
     @FXML
     private ProgressBar PrB_ProecessoEscrita;
+    @FXML
+    private ProgressBar PrB_ProecessoFilaConv;
+    @FXML
+    private ProgressBar PrB_ProecessoFilaEscrt;
+    
     @FXML 
     private TextArea txtA_Status;
     @FXML 
@@ -97,16 +102,16 @@ public class InterfaceMain implements javafx.fxml.Initializable{
  		}
 
      }
-     @FXML////////////////////////////////////////////////////////////
-     private void MostrarTempo(ActionEvent event) {
-      	try {
-      		Tempo();
-  		} catch (Exception e) {
-  			// TODO Auto-generated catch block
-  			e.printStackTrace();
-  		}
-
-      }
+//     @FXML////////////////////////////////////////////////////////////
+//     private void MostrarTempo(ActionEvent event) {
+//      	try {
+//      		Tempo();
+//  		} catch (Exception e) {
+//  			// TODO Auto-generated catch block
+//  			e.printStackTrace();
+//  		}
+//
+//      }
     @FXML////////////////////////////////////////////////////////////
     private void AbrirArquivo(ActionEvent event) {
     	try {
@@ -138,7 +143,7 @@ public class InterfaceMain implements javafx.fxml.Initializable{
 	    		txtA_Status.appendText("----------BEM VINDO-----------" + "\n");
 	   			System.out.println(dirOriginario);
 				System.out.println(dirDestinado);
-				new ControllerInterfaceClient(this, PrB_ProgressoLeitura, PrB_ProecessoConversao, PrB_ProecessoEscrita, txtA_Status, dirOriginario, dirDestinado);
+				new ControllerInterfaceClient(this, PrB_ProgressoLeitura, PrB_ProecessoConversao, PrB_ProecessoEscrita, PrB_ProecessoFilaConv, PrB_ProecessoFilaEscrt, txtA_Status, dirOriginario, dirDestinado);
 				//controller = new Controller(dirOriginario,dirDestinado);
 				//controller.Inicia();
 //				btn_ConverteArquivo.setDisable(true);

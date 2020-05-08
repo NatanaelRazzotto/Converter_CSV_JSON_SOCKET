@@ -76,12 +76,12 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter,
 		this.converterJSON();
 		this.EscritordeJSON();
 		while (this.IsContinuaEscrita()==true) {
-			if (this.filaCSV.size() > 0)
+			if (this.filaCSV.size() > 50)
 			{
 				new Thread(new ConversorJSON(this)).start();
 				System.out.println("----Startou Thread--------------");
 			}
-			if (this.ObjetosJson.size() > 100)
+			if (this.ObjetosJson.size() > 50)
 			{
 				new Thread(escritor).start();
 			}
@@ -127,6 +127,12 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter,
 	}
 	public synchronized boolean IsContinuaProcessamento() {
 		return this.ContinuaProcessamento;
+	}
+	public synchronized int IsSizeListaCSV() {
+		return filaCSV.size();
+	}
+	public synchronized int IsSizeListaJson() {
+		return ObjetosJson.size();
 	}
 	/////////////////////////////////////////// CSV/////////////////////////////////////////
 	private void TratamentodeCSV() {

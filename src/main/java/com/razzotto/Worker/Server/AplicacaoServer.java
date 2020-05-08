@@ -163,6 +163,8 @@ public class AplicacaoServer extends Thread{
 		arquivonovo.setProgressLeitura(controller.getRegistrosLidos());
 		arquivonovo.setProgressConversao(controller.getRegistrosConvertidos());
 		arquivonovo.setProgressEscrita(controller.getRegistrosWriter());
+		arquivonovo.setProgressFilaCSV(controller.IsSizeListaCSV());
+		arquivonovo.setProgressFilaJson(controller.IsSizeListaJson());
 		arquivonovo.setTamanhodoArquivo(totalRegistros);
 		//arquivonovo.setManterConectado(controller.IsContinuaEscrita());
 		arquivonovo.setManterConectado(definicao);
