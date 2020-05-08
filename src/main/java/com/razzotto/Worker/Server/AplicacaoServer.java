@@ -18,14 +18,14 @@ import javafx.concurrent.Task;
 public class AplicacaoServer extends Thread{
 	Controller controller;
 	private Socket conexao;
-	public AplicacaoServer(Socket s){//recebe o valor do socket enviado na thread
+	public AplicacaoServer(Socket s){
 		conexao = s;
 	}
 	public AplicacaoServer() throws ClassNotFoundException, IOException
 	{
 		ServerSocket server = null;
 		try {
-			server = new ServerSocket(12345);
+			server = new ServerSocket(49152);
 			while(true){	
 			System.out.println("Antes do Accept");
 			Socket Conexao = server.accept();
@@ -34,11 +34,8 @@ public class AplicacaoServer extends Thread{
 			t.start();
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
-
-	//	conectorClienteServer();
 	}
 	public void run(){
 		ObjectInputStream scanner;
@@ -54,7 +51,6 @@ public class AplicacaoServer extends Thread{
 			int i = 0;
 		while (!conexao.isClosed()) {
 			try {
-				//Arquivo arquivo = new Arquivo();
 			    outToClient.flush();
 			  
 			    if (arquivo.getManterConectado()==true)
@@ -93,39 +89,7 @@ public class AplicacaoServer extends Thread{
 			    	conexao.close();
 			    	break;
 			    }
-			    
-
-//			    boolean cont = true;
-//			    while (cont) {
-//			    	arquivo = obteratualizacoes(arquivo);
-//			    	outToClient.writeObject(arquivo);
-//			    }
-				
-					
-				
-	
-			//   Arquivo arquivoEnvio = new Arquivo();
-			  //  while (arquivoEnvio.getTerminouEscrita()) {
-			//	arquivo.setProgressLeitura(10000);
-			    	
-			    	//ProgressoArquivo pa = new ProgressoArquivo();
-				
-					//System.out.println(pa);
-			//    }
-			    System.out.println("Terminou server");
-
-
-				//String recebido = scanner.nextLine();
-				//System.out.println(arquivo);
-			 //   outToClient.flush();
-			//    outToClient.close();
-			//	conexao.close();
-//				if (arquivo.getManterConectado()==false) {
-//					conexao.close();
-//				}
-
-			//	System.out.println(arquivo.getDiretorioOriginario());
-				
+			    System.out.println("Realizou Processo conectado");
 			} catch (NoSuchElementException | ClassNotFoundException e) {
 				System.out.println("Erro de conexão - Cliente desconectou inesperadamente!!!");
 				conexao.close();
@@ -137,7 +101,6 @@ public class AplicacaoServer extends Thread{
 		conexao.close();
 		System.out.println("Servidor encerrado.");
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
@@ -158,7 +121,6 @@ public class AplicacaoServer extends Thread{
 				definicao = false;
 			}
 		}
-		//Arquivo arquivonovo = new Arquivo();
 
 		arquivonovo.setProgressLeitura(controller.getRegistrosLidos());
 		arquivonovo.setProgressConversao(controller.getRegistrosConvertidos());
@@ -166,9 +128,10 @@ public class AplicacaoServer extends Thread{
 		arquivonovo.setProgressFilaCSV(controller.IsSizeListaCSV());
 		arquivonovo.setProgressFilaJson(controller.IsSizeListaJson());
 		arquivonovo.setTamanhodoArquivo(totalRegistros);
-		//arquivonovo.setManterConectado(controller.IsContinuaEscrita());
 		arquivonovo.setManterConectado(definicao);
-		//arquivonovo.setIniciouLeitura(controller.);
+		arquivonovo.setIniciouLeitura(controller.IsinicioLeitura());
+		arquivonovo.setIniciouConversao(controller.IsinicioEscrita());
+		arquivonovo.setIniciouEscrita(controller.IsinicioEscrita());
 		arquivonovo.setTerminouLeitura(controller.IsContinuaLeituraCSV());
 		arquivonovo.setTerminouLeitura(controller.IsContinuaLeituraJSON());
 		arquivonovo.setTerminouEscrita(controller.IsContinuaEscrita());
@@ -178,55 +141,5 @@ public class AplicacaoServer extends Thread{
 		
 	}
 
-	
-
-//	public void conectorClienteServer () throws IOException, ClassNotFoundException
-//	{
-//			//ServerSocket server = new ServerSocket(12345);
-//			
-//		
-//		//	Socket cliente = server.accept(); // blocante
-//	
-//			ObjectInputStream scanner = new ObjectInputStream(cliente.getInputStream());
-//			ObjectOutputStream outToClient = new ObjectOutputStream(cliente.getOutputStream());
-//		
-//			while (!cliente.isClosed()) {
-//				try {
-//					Arquivo arquivo = new Arquivo();
-//					arquivo = (Arquivo) scanner.readObject();
-//				//	System.out.println("Object received = " + arquivo);
-////					Controller controller = new Controller(arquivo.getDiretorioOriginario(),arquivo.getDiretorioDestinado());
-////					controller.Inicia();
-//					//String recebido = scanner.nextLine();
-//					if (arquivo.getManterConectado() == false) {
-//						cliente.close();
-//					}
-//					else 
-//					{
-//						if (arquivo.getStartNovoProcesso()== true) {
-//							controller = new Controller(arquivo.getDiretorioOriginario(),arquivo.getDiretorioDestinado());
-//    						controller.Inicia();
-//							arquivo.setIniciouLeitura(true);
-//							System.out.println(arquivo);
-//			                outToClient.writeObject(obteratualizacoes(arquivo));
-//						}
-//						else
-//						{
-//							System.out.println(arquivo);
-//			                outToClient.writeObject(obteratualizacoes(arquivo));
-//						}
-//
-//					}
-//	
-//					System.out.println("Object received = " + arquivo);
-//					
-//				} catch (NoSuchElementException e) {
-//					System.out.println("Erro de conexão - Cliente desconectou inesperadamente!!!");
-//					cliente.close();
-//				}
-//	
-//			}
-//			System.out.println("Servidor encerrado.");
-//		}
 
 }

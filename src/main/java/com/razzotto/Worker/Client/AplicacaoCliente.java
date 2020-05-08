@@ -1,4 +1,4 @@
-package com.razzotto.Worker;
+package com.razzotto.Worker.Client;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,47 +17,18 @@ import InterfaceUICliente.ControllerInterfaceClient;
 public class AplicacaoCliente extends Thread{
 	private ControllerInterfaceClient controllerClient;
 	private String endereco;
-//	private Socket cliente;
 	private Socket conexao;
-	//Arquivo arquivo;
-  //  private ObjectOutputStream saida;
-  //  private ObjectInputStream scannerServer;
     File dirOriginario;
     File dirDestinado;
     Integer porta;
-    
-	//private PrintStream saida;
 	Boolean mensagem;
 	Boolean NovoProcesso;
-	public AplicacaoCliente(ControllerInterfaceClient controller,Integer pota, File dirArquivoOriginario, File dirDestinadoSalvamento) {
-		try {
-			endereco = InetAddress.getByName("localhost").getHostAddress();
-//			try {
-				System.out.println("tesndao");
-	   			System.out.println(dirOriginario);
-				System.out.println(dirDestinado);
-				controllerClient = controller;
-		
-				porta =pota;
-
-			//	saida= new ObjectOutputStream (cliente.getOutputStream());
-			//	scannerServer = new ObjectInputStream(cliente.getInputStream());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-//		} catch (UnknownHostException e) {
-//			e.printStackTrace();
-//		}
-	}
 	public AplicacaoCliente(Socket s, File dirArquivoOriginario, File dirDestinadoSalvamento,ControllerInterfaceClient controller){//recebe o valor do socket enviado na thread
 		conexao = s;
 		dirOriginario = dirArquivoOriginario;
 		dirDestinado = dirDestinadoSalvamento;
 		controllerClient = controller;
 	}
-
-
-
 	public void run() {
 		try {
 			ObjectOutputStream saida= new ObjectOutputStream (conexao.getOutputStream());

@@ -36,6 +36,9 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter,
 	private boolean ContinuaEscrita = true;
 	private boolean ContinuaConversaoJSON = true;
 	private boolean ContinuaProcessamento = true;
+	private boolean IniciouLeitura = false;
+	private boolean IniciouConversao = false;
+	private boolean IniciouEscrita = false;	
 	private Instant inicioLeituraFile;
 	private Instant FimLeituraFile;
 	private Instant inicioLeituraFileJSON;
@@ -89,7 +92,6 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter,
 		escritor.EncerrarArquivo();
 		setContinuaProcessamento();
 		
-	//	new TratamentoTempo().GerarLogsdeTempo(this);;
 		System.out.println("Terminou com sucesso");
 		}
 		catch (Exception e) {
@@ -97,33 +99,30 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter,
 		}
 		
 	}
-	public void Inicia() {
-		this.TratamentodeCSV();
-		this.converterJSON();
-		this.EscritordeJSON();
-		System.out.println("Terminou com sucesso");
-		while (emOperacaoJson()) {
-			if (this.filaCSV.size() > 90)
-			{
-				new Thread(new ConversorJSON(this)).start();
-				System.out.println("----Startou Thread--------------");
-			}
-			if (this.ObjetosJson.size() > 90)
-			{
-				new Thread(escritor).start();
-				System.out.println("----Escrita--------------");
-			}
-			
-
-		}
-
-	}
 	public synchronized void ObterTempo(int chave,Instant Inicio, Instant Fim) {
 		new TratamentoTempo().obterDuracao(this, Inicio, Fim, chave);
 	}
 	
 	public void setContinuaProcessamento() {
        		this.ContinuaProcessamento = false;
+	}
+	public void setinicioLeitura() {
+   		this.IniciouLeitura = true;
+	}	
+	public synchronized boolean IsinicioLeitura() {
+		return IniciouLeitura;
+	}
+	public void setinicioConversao() {
+   		this.IniciouConversao = true;
+	}	
+	public synchronized boolean IsinicioConversao() {
+		return IniciouConversao;
+	}
+	public void setinicioEscrita() {
+   		this.IniciouEscrita = true;
+	}	
+	public synchronized boolean IsinicioEscrita() {
+		return IniciouEscrita;
 	}
 	public synchronized boolean IsContinuaProcessamento() {
 		return this.ContinuaProcessamento;
@@ -142,6 +141,7 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter,
 		Thread tCSV = new Thread(trataCSV);
 		tCSV.setName("Thread_TRATACSV");
 		tCSV.start();
+		setinicioLeitura();
 
 	}
 	@Override
@@ -181,14 +181,10 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter,
 		SetTempoInicialJson();
 		Thread t1 = new Thread(new ConversorJSON(this));
 	//	Thread t2 = new Thread(new ConversorJSON(this));
-	//	Thread t3 = new Thread(new ConversorJSON(this));
-	//	Thread t4 = new Thread(new ConversorJSON(this));
 		t1.start();
 	//	t2.start();
-	//	t3.start();
-	//	t4.start();
 		try {
-	//		System.out.println(ObjetosJson.size() + "Listaconvertida");
+			setinicioConversao();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -244,6 +240,7 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter,
 		Thread tEcritor = new Thread(escritor);
 		tEcritor.setName("Thread_tEcritor");
 		tEcritor.start();
+		setinicioEscrita();
 		SetTempoIniciaWriter();
 
 	}
@@ -273,10 +270,7 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter,
 			ObterTempo(3,this.inicioLeituraFileWRITER,this.FimLeituraFileWriter);
 			new TratamentoTempo().GerarLogsdeTempo(this);
 		}
-//		else 
-//		{
-//			escritor.EncerrarArquivo();
-//		}
+
 		ContinuaEscrita = terminou;
 
 	}
@@ -290,7 +284,6 @@ public class Controller implements InterfaceCSV, InterfaceJSON, InterfaceWriter,
 	}
 	public synchronized void setRegistrosWriter() {
 		this.RegistrosEscritos++;
-	//	System.out.println("-----" + this.RegistrosEscritos);
 
 	}
 
